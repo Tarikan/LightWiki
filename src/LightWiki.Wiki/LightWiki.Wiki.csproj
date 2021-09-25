@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>LightWiki</RootNamespace>
+        <CodeAnalysisRuleSet>..\LightWiki.Infrastructure\StyleCop\StyleCopRules.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="10.1.1" />
+        <PackageReference Include="MediatR" Version="9.0.0" />
+        <PackageReference Include="OneOf" Version="3.0.201" />
+        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="..\LightWiki.Infrastructure\StyleCop\stylecop.json" Link="stylecop.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\ArticleVersions\Handlers" />
+      <Folder Include="Features\ArticleVersions\Requests" />
+      <Folder Include="Features\ArticleVersions\Validators" />
+      <Folder Include="Features\Users\Handlers" />
+      <Folder Include="Features\Users\Requests" />
+      <Folder Include="Features\Users\Validators" />
+      <Folder Include="MappingProfiles" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LightWiki.Data\LightWiki.Data.csproj" />
+      <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
+      <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
