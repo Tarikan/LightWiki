@@ -13,7 +13,7 @@ using OneOf;
 
 namespace LightWiki.Features.Articles.Handlers
 {
-    public class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<SuccessWithId<int>, Fail>>
+    public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<SuccessWithId<int>, Fail>>
     {
         private readonly WikiContext _wikiContext;
         private readonly IMapper _mapper;

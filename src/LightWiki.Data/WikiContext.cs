@@ -16,6 +16,12 @@ namespace LightWiki.Data
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Group> Groups { get; set; }
+
+        public DbSet<ArticlePersonalAccessRule> ArticlePersonalAccessRules { get; set; }
+
+        public DbSet<ArticleGroupAccessRule> ArticleGroupAccessRules { get; set; }
+
         public override Task<int> SaveChangesAsync(
             bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default)
@@ -45,6 +51,11 @@ namespace LightWiki.Data
             });
 
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSnakeCaseNamingConvention();
         }
     }
 }

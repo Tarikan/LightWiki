@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="google-diff-match-patch" Version="1.1.27" />
+        <PackageReference Include="EFCore.NamingConventions" Version="5.0.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <PrivateAssets>all</PrivateAssets>

@@ -6,13 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="10.1.1" />
-        <PackageReference Include="FluentValidation" Version="10.3.3" />
-        <PackageReference Include="MediatR" Version="9.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="OneOf" Version="3.0.201" />
+        <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj"/>
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="StyleCop\stylecop.json" Link="stylecop.json" />
+        <AdditionalFiles Include="..\LightWiki.Infrastructure\StyleCop\stylecop.json" Link="stylecop.json" />
     </ItemGroup>
 
 </Project>

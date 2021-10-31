@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using LightWiki.Domain.Enums;
-using LightWiki.Domain.Interfaces;
+using LightWiki.Domain.Models;
 
-namespace LightWiki.Domain.Models
+namespace LightWiki.Features.Articles.Responses.Models
 {
-    public class Article : ITrackable
+    public class ArticleWithContentModel
     {
         public int Id { get; set; }
 
         public string Name { get; set; }
-
-        public List<ArticleVersion> Versions { get; set; }
-
-        public User User { get; set; }
 
         public int UserId { get; set; }
 
@@ -21,13 +17,12 @@ namespace LightWiki.Domain.Models
 
         public DateTime CreatedAt { get; set; }
 
-        // global rules, can be overwritten by group and personal or group rules
         public ArticleAccessRule GlobalAccessRule { get; set; }
 
-        // rules for groups, overrides global rules and being overwritten by personal rules
         public List<ArticleGroupAccessRule> GroupAccessRules { get; set; }
 
-        // rules for users, overwrites global and group rules
         public List<ArticlePersonalAccessRule> PersonalAccessRules { get; set; }
+
+        public string Content { get; set; }
     }
 }

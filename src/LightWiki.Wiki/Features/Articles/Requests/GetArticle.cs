@@ -6,7 +6,7 @@ using OneOf;
 
 namespace LightWiki.Features.Articles.Requests
 {
-    public class GetArticle : IRequest<OneOf<ArticleModel, Fail>>
+    public sealed class GetArticle : IRequest<OneOf<ArticleWithContentModel, Fail>>
     {
         public int Id { get; set; }
     }

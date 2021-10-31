@@ -5,8 +5,10 @@ using OneOf;
 
 namespace LightWiki.Features.Articles.Requests
 {
-    public sealed class CreateArticle : IRequest<OneOf<SuccessWithId<int>, Fail>>
+    public sealed class UpdateArticle : IRequest<OneOf<Success, Fail>>
     {
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
         public ArticleAccessRule GlobalAccessRule { get; set; }
