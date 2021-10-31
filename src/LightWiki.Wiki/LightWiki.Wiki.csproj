@@ -8,7 +8,6 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="10.1.1" />
-        <PackageReference Include="DiffMatchPatch" Version="1.0.3" />
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="OneOf" Version="3.0.201" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -35,6 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\LightWiki.Data.Mongo\LightWiki.Data.Mongo.csproj" />
       <ProjectReference Include="..\LightWiki.Data\LightWiki.Data.csproj" />
       <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
       <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj" />

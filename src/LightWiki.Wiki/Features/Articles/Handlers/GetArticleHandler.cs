@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using DiffMatchPatch;
 using LightWiki.Data;
+using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Models;
@@ -18,11 +17,13 @@ namespace LightWiki.Features.Articles.Handlers
     {
         private readonly WikiContext _wikiContext;
         private readonly IMapper _mapper;
+        private readonly ArticleHtmlRepository _articleHtmlRepository;
 
-        public GetArticleHandler(WikiContext wikiContext, IMapper mapper)
+        public GetArticleHandler(WikiContext wikiContext, IMapper mapper, ArticleHtmlRepository articleHtmlRepository)
         {
             _wikiContext = wikiContext;
             _mapper = mapper;
+            _articleHtmlRepository = articleHtmlRepository;
         }
 
         public async Task<OneOf<ArticleWithContentModel, Fail>> Handle(
@@ -34,10 +35,7 @@ namespace LightWiki.Features.Articles.Handlers
                               .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken) ??
                           throw new ArticleDoesNotExistsException();
 
-            var dmp = new diff_match_patch();
-            var text = article.Versions.OrderBy(v => v.CreatedAt)
-                .Select(version => dmp.patch_fromText(version.Patch))
-                .Aggregate(string.Empty, (current, patches) => dmp.patch_apply(patches, current)[0] as string);
+            var text = (await _articleHtmlRepository.GetLatest(article.Id)).Text;
 
             var model = _mapper.Map<ArticleWithContentModel>(article);
             model.Content = text;

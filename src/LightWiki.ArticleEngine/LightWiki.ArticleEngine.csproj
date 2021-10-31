@@ -6,8 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="EFCore.NamingConventions" Version="5.0.2"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9"/>
+        <PackageReference Include="DiffMatchPatch" Version="1.0.3" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,11 +18,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="..\LightWiki.Infrastructure\StyleCop\stylecop.json" Link="stylecop.json"/>
+        <AdditionalFiles Include="..\LightWiki.Infrastructure\StyleCop\stylecop.json" Link="stylecop.json" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj"/>
+        <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="MarkDown" />
     </ItemGroup>
 
 </Project>
