@@ -25,9 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\ArticleVersions\Handlers" />
-      <Folder Include="Features\ArticleVersions\Requests" />
-      <Folder Include="Features\ArticleVersions\Validators" />
       <Folder Include="Features\Users\Handlers" />
       <Folder Include="Features\Users\Requests" />
       <Folder Include="Features\Users\Validators" />

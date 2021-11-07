@@ -9,8 +9,7 @@ namespace LightWiki.MappingProfiles
     {
         public ArticleProfile()
         {
-            CreateMap<Article, ArticleWithContentModel>()
-                .ForMember(m => m.Content, opts => opts.Ignore());
+            CreateMap<Article, ArticleModel>();
             CreateMap<CreateArticle, Article>();
         }
     }

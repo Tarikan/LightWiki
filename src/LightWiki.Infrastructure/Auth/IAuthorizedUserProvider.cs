@@ -1,6 +1,6 @@
 ﻿namespace LightWiki.Infrastructure.Auth
 {
-    public interface IUserProvider
+    public interface IAuthorizedUserProvider
     {
         public UserContext GetUserOrDefault();
 

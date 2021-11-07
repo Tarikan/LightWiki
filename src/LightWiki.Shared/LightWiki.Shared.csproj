@@ -2,11 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <CodeAnalysisRuleSet>StyleCop\StyleCopRules.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>..\LightWiki.Infrastructure\StyleCop\StyleCopRules.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj"/>
+        <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
+        <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj" />
+        <PackageReference Include="Sieve" Version="2.5.1" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

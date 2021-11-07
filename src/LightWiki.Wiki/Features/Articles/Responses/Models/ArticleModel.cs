@@ -18,9 +18,7 @@ namespace LightWiki.Features.Articles.Responses.Models
         public DateTime CreatedAt { get; set; }
 
         public ArticleAccessRule GlobalAccessRule { get; set; }
-
-        public List<ArticleGroupAccessRule> GroupAccessRules { get; set; }
-
-        public List<ArticlePersonalAccessRule> PersonalAccessRules { get; set; }
+        // public List<ArticleGroupAccessRule> GroupAccessRules { get; set; }
+        // public List<ArticlePersonalAccessRule> PersonalAccessRules { get; set; }
     }
 }

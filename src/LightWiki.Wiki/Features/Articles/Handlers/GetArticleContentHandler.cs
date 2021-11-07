@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using LightWiki.Data;
+using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
@@ -15,27 +15,27 @@ using OneOf;
 
 namespace LightWiki.Features.Articles.Handlers
 {
-    public sealed class GetArticleHandler : IRequestHandler<GetArticle, OneOf<ArticleModel, Fail>>
+    public class GetArticleContentHandler : IRequestHandler<GetArticleContent, OneOf<ArticleContentModel, Fail>>
     {
-        private readonly WikiContext _wikiContext;
-        private readonly IMapper _mapper;
+        private readonly ArticleHtmlRepository _articleHtmlRepository;
         private readonly IAuthorizedUserProvider _authorizedUserProvider;
+        private readonly WikiContext _wikiContext;
         private readonly AppConfiguration _appConfiguration;
 
-        public GetArticleHandler(
-            WikiContext wikiContext,
-            IMapper mapper,
+        public GetArticleContentHandler(
+            ArticleHtmlRepository articleHtmlRepository,
             IAuthorizedUserProvider authorizedUserProvider,
+            WikiContext wikiContext,
             AppConfiguration appConfiguration)
         {
-            _wikiContext = wikiContext;
-            _mapper = mapper;
+            _articleHtmlRepository = articleHtmlRepository;
             _authorizedUserProvider = authorizedUserProvider;
+            _wikiContext = wikiContext;
             _appConfiguration = appConfiguration;
         }
 
-        public async Task<OneOf<ArticleModel, Fail>> Handle(
-            GetArticle request,
+        public async Task<OneOf<ArticleContentModel, Fail>> Handle(
+            GetArticleContent request,
             CancellationToken cancellationToken)
         {
             var userContext = _authorizedUserProvider.GetUserOrDefault();
@@ -66,9 +66,12 @@ namespace LightWiki.Features.Articles.Handlers
                 return new Fail("User does not have access to this resource", FailCode.Forbidden);
             }
 
-            var model = _mapper.Map<ArticleModel>(article);
+            var text = (await _articleHtmlRepository.GetLatest(request.ArticleId)).Text;
 
-            return model;
+            return new ArticleContentModel
+            {
+                Text = text,
+            };
         }
     }
 }

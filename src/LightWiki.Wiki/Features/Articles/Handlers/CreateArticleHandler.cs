@@ -17,20 +17,20 @@ namespace LightWiki.Features.Articles.Handlers
     {
         private readonly WikiContext _wikiContext;
         private readonly IMapper _mapper;
-        private readonly IUserProvider _userProvider;
+        private readonly IAuthorizedUserProvider _authorizedUserProvider;
 
-        public CreateArticleHandler(WikiContext wikiContext, IMapper mapper, IUserProvider userProvider)
+        public CreateArticleHandler(WikiContext wikiContext, IMapper mapper, IAuthorizedUserProvider authorizedUserProvider)
         {
             _wikiContext = wikiContext;
             _mapper = mapper;
-            _userProvider = userProvider;
+            _authorizedUserProvider = authorizedUserProvider;
         }
 
         public async Task<OneOf<SuccessWithId<int>, Fail>> Handle(
             CreateArticle request,
             CancellationToken cancellationToken)
         {
-            var userContext = _userProvider.GetUser();
+            var userContext = _authorizedUserProvider.GetUser();
             var article = _mapper.Map<Article>(request);
 
             article.Name = article.Name.ToUrlFriendlyString();
