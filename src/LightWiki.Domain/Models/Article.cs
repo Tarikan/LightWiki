@@ -21,7 +21,7 @@ namespace LightWiki.Domain.Models
 
         public DateTime CreatedAt { get; set; }
 
-        // global rules, can be overwritten by group and personal or group rules
+        // global rules, can be overwritten by group and personal rules
         public ArticleAccessRule GlobalAccessRule { get; set; }
 
         // rules for groups, overrides global rules and being overwritten by personal rules

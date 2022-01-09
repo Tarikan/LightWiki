@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using LightWiki.Features.Articles.Handlers;
+using LightWiki.Features.Articles.Requests;
+using LightWiki.Features.Articles.Responses.Models;
+using LightWiki.Features.Articles.Validators;
+using LightWiki.Infrastructure.MediatR;
+using LightWiki.Infrastructure.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace LightWiki.Wiki.Api
@@ -26,6 +25,8 @@ namespace LightWiki.Wiki.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AddHandlers(services);
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -50,6 +51,38 @@ namespace LightWiki.Wiki.Api
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private void AddHandlers(IServiceCollection services)
+        {
+            #region Articles
+
+            services.ForScoped<CreateArticle, SuccessWithId<int>>()
+                .WithValidation<CreateArticleValidator>()
+                .AddHandler<CreateArticleHandler>();
+
+            services.ForScoped<GetArticleContent, ArticleContentModel>()
+                .WithValidation<GetArticleContentValidator>()
+                .AddHandler<GetArticleContentHandler>();
+
+            services.ForScoped<GetArticle, ArticleModel>()
+                .WithValidation<GetArticleValidator>()
+                .AddHandler<GetArticleHandler>();
+
+            services.ForScoped<GetArticles, CollectionResult<ArticleModel>>()
+                .AddHandler<GetArticlesHandler>();
+
+            services.ForScoped<UpdateArticle, Success>()
+                .WithValidation<UpdateArticleValidator>()
+                .AddHandler<UpdateArticleHandler>();
+
+            #endregion
+
+            #region Users
+
+            
+
+            #endregion
         }
     }
 }
