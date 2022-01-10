@@ -10,6 +10,10 @@ namespace LightWiki.Data
 {
     public class WikiContext : DbContext
     {
+        public WikiContext(DbContextOptions opts) : base(opts)
+        {
+        }
+
         public DbSet<Article> Articles { get; set; }
 
         public DbSet<ArticleVersion> ArticleVersions { get; set; }

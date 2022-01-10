@@ -1,15 +1,31 @@
+using System;
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using LightWiki.Data;
 using LightWiki.Features.Articles.Handlers;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Features.Articles.Validators;
+using LightWiki.Infrastructure.Auth;
+using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.MediatR;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Infrastructure.Web.Authentication;
+using LightWiki.Wiki.Api.Auth;
+using MediatR;
+using MicroElements.Swashbuckle.FluentValidation;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
+using MongoDB.Driver.Core.Configuration;
 
 namespace LightWiki.Wiki.Api
 {
@@ -25,18 +41,47 @@ namespace LightWiki.Wiki.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
+            services.AddSingleton(connectionStrings);
+
+            services.AddMediatR(typeof(Startup));
             AddHandlers(services);
 
-            services.AddControllers();
+            services.AddJwtAuthentication();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IAuthorizedUserProvider, AuthorizedUserProvider>();
+
+            services.AddDbContext<WikiContext>(opts => opts.UseNpgsql(connectionStrings.DbConnection));
+
+            services.AddControllers()
+                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LightWiki.Wiki.Api", Version = "v1" });
             });
+
+            services.AddCors(o => o.AddPolicy("default", corsPolicyBuilder =>
+            {
+                corsPolicyBuilder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
+            services.AddFluentValidation(options =>
+            {
+                options.AutomaticValidationEnabled = false;
+                options.ConfigureClientsideValidation(enabled: false);
+                options.ValidatorFactoryType = typeof(HttpContextServiceProviderValidatorFactory);
+            });
+            services.AddFluentValidationRulesToSwagger();
+            services.AddHealthChecks();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
         {
+            mapper.ConfigurationProvider.AssertConfigurationIsValid();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

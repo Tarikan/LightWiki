@@ -17,13 +17,13 @@ namespace LightWiki.Features.Articles.Handlers
 {
     public class GetArticleContentHandler : IRequestHandler<GetArticleContent, OneOf<ArticleContentModel, Fail>>
     {
-        private readonly ArticleHtmlRepository _articleHtmlRepository;
+        private readonly IArticleHtmlRepository _articleHtmlRepository;
         private readonly IAuthorizedUserProvider _authorizedUserProvider;
         private readonly WikiContext _wikiContext;
         private readonly AppConfiguration _appConfiguration;
 
         public GetArticleContentHandler(
-            ArticleHtmlRepository articleHtmlRepository,
+            IArticleHtmlRepository articleHtmlRepository,
             IAuthorizedUserProvider authorizedUserProvider,
             WikiContext wikiContext,
             AppConfiguration appConfiguration)

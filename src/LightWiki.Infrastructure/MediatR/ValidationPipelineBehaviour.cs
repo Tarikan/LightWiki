@@ -9,6 +9,7 @@ using OneOf;
 namespace LightWiki.Infrastructure.MediatR
 {
     public class ValidationPipelineBehaviour<TRequest, TResult> : IPipelineBehavior<TRequest, OneOf<TResult, Fail>>
+        where TRequest : IRequest<OneOf<TResult, Fail>>
     {
         private readonly IValidator<TRequest> _validator;
 
@@ -17,7 +18,10 @@ namespace LightWiki.Infrastructure.MediatR
             _validator = validator;
         }
 
-        public async Task<OneOf<TResult, Fail>> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<OneOf<TResult, Fail>> next)
+        public async Task<OneOf<TResult, Fail>> Handle(
+            TRequest request,
+            CancellationToken cancellationToken,
+            RequestHandlerDelegate<OneOf<TResult, Fail>> next)
         {
             var result = await _validator.ValidateAsync(request, cancellationToken);
 
