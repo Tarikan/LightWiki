@@ -8,10 +8,8 @@ namespace LightWiki.Shared.Query
     public class ApplicationSieveProcessor : SieveProcessor
     {
         public ApplicationSieveProcessor(
-            IOptions<SieveOptions> options,
-            ISieveCustomSortMethods customSortMethods,
-            ISieveCustomFilterMethods customFilterMethods)
-            : base(options, customSortMethods, customFilterMethods)
+            IOptions<SieveOptions> options)
+            : base(options)
         {
         }
 

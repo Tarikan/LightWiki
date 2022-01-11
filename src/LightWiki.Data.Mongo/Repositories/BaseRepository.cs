@@ -11,10 +11,8 @@ namespace LightWiki.Data.Mongo.Repositories
     {
         protected IMongoCollection<T> Collection { get; }
 
-        protected BaseRepository(MongoConfiguration mongoSettings)
+        protected BaseRepository(IMongoDatabase database)
         {
-            var client = new MongoClient(mongoSettings.ConnectionString);
-            var database = client.GetDatabase(mongoSettings.DatabaseName);
             Collection = database.GetCollection<T>(nameof(T));
         }
 

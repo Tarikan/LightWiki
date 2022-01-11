@@ -8,7 +8,8 @@ namespace LightWiki.Data.Mongo.Repositories
 {
     public class ArticleHtmlRepository : BaseRepository<ArticleHtml>, IArticleHtmlRepository
     {
-        public ArticleHtmlRepository(MongoConfiguration mongoSettings) : base(mongoSettings)
+        public ArticleHtmlRepository(MongoClient mongoClient, ConnectionStrings connectionStrings)
+            : base(mongoClient.GetDatabase(connectionStrings.MongoDatabaseName))
         {
         }
 
