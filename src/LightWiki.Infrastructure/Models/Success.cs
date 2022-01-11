@@ -1,6 +1,5 @@
-﻿namespace LightWiki.Infrastructure.Models
+﻿namespace LightWiki.Infrastructure.Models;
+
+public class Success
 {
-    public class Success
-    {
-    }
 }

@@ -1,8 +1,7 @@
-﻿namespace LightWiki.Data.Mongo.Enums
+﻿namespace LightWiki.Data.Mongo.Enums;
+
+public enum ArticleStoreType
 {
-    public enum ArticleStoreType
-    {
-        Latest = 0,
-        Intermediate = 1,
-    }
+    Latest = 0,
+    Intermediate = 1,
 }

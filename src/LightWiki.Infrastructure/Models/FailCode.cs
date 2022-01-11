@@ -1,11 +1,10 @@
-﻿namespace LightWiki.Infrastructure.Models
+﻿namespace LightWiki.Infrastructure.Models;
+
+public enum FailCode
 {
-    public enum FailCode
-    {
-        None = 0,
-        BadRequest = 400,
-        Unauthorized = 401,
-        Forbidden = 403,
-        NotFound = 404,
-    }
+    None = 0,
+    BadRequest = 400,
+    Unauthorized = 401,
+    Forbidden = 403,
+    NotFound = 404,
 }

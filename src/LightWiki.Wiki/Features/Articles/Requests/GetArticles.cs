@@ -4,9 +4,8 @@ using MediatR;
 using OneOf;
 using Sieve.Models;
 
-namespace LightWiki.Features.Articles.Requests
+namespace LightWiki.Features.Articles.Requests;
+
+public class GetArticles : SieveModel, IRequest<OneOf<CollectionResult<ArticleModel>, Fail>>
 {
-    public class GetArticles : SieveModel, IRequest<OneOf<CollectionResult<ArticleModel>, Fail>>
-    {
-    }
 }

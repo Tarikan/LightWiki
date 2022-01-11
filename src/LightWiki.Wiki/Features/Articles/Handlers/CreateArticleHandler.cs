@@ -11,46 +11,45 @@ using LightWiki.Infrastructure.Models;
 using MediatR;
 using OneOf;
 
-namespace LightWiki.Features.Articles.Handlers
+namespace LightWiki.Features.Articles.Handlers;
+
+public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<SuccessWithId<int>, Fail>>
 {
-    public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<SuccessWithId<int>, Fail>>
+    private readonly WikiContext _wikiContext;
+    private readonly IMapper _mapper;
+    private readonly IAuthorizedUserProvider _authorizedUserProvider;
+
+    public CreateArticleHandler(WikiContext wikiContext, IMapper mapper, IAuthorizedUserProvider authorizedUserProvider)
     {
-        private readonly WikiContext _wikiContext;
-        private readonly IMapper _mapper;
-        private readonly IAuthorizedUserProvider _authorizedUserProvider;
+        _wikiContext = wikiContext;
+        _mapper = mapper;
+        _authorizedUserProvider = authorizedUserProvider;
+    }
 
-        public CreateArticleHandler(WikiContext wikiContext, IMapper mapper, IAuthorizedUserProvider authorizedUserProvider)
+    public async Task<OneOf<SuccessWithId<int>, Fail>> Handle(
+        CreateArticle request,
+        CancellationToken cancellationToken)
+    {
+        var userContext = _authorizedUserProvider.GetUser();
+        var article = _mapper.Map<Article>(request);
+
+        article.Name = article.Name.ToUrlFriendlyString();
+        article.UserId = userContext.Id;
+        article.Versions = new List<ArticleVersion>();
+
+        var version = new ArticleVersion()
         {
-            _wikiContext = wikiContext;
-            _mapper = mapper;
-            _authorizedUserProvider = authorizedUserProvider;
-        }
+            Patch = string.Empty,
+            Article = article,
+            UserId = userContext.Id,
+        };
 
-        public async Task<OneOf<SuccessWithId<int>, Fail>> Handle(
-            CreateArticle request,
-            CancellationToken cancellationToken)
-        {
-            var userContext = _authorizedUserProvider.GetUser();
-            var article = _mapper.Map<Article>(request);
+        article.Versions.Add(version);
 
-            article.Name = article.Name.ToUrlFriendlyString();
-            article.UserId = userContext.Id;
-            article.Versions = new List<ArticleVersion>();
+        await _wikiContext.AddAsync(version, cancellationToken);
+        await _wikiContext.Articles.AddAsync(article, cancellationToken);
+        await _wikiContext.SaveChangesAsync(cancellationToken);
 
-            var version = new ArticleVersion()
-            {
-                Patch = string.Empty,
-                Article = article,
-                UserId = userContext.Id,
-            };
-
-            article.Versions.Add(version);
-
-            await _wikiContext.AddAsync(version, cancellationToken);
-            await _wikiContext.Articles.AddAsync(article, cancellationToken);
-            await _wikiContext.SaveChangesAsync(cancellationToken);
-
-            return new SuccessWithId<int>(article.Id);
-        }
+        return new SuccessWithId<int>(article.Id);
     }
 }

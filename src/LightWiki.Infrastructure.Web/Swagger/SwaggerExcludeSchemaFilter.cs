@@ -5,28 +5,27 @@ using LightWiki.Infrastructure.Extensions;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace LightWiki.Infrastructure.Web.Swagger
+namespace LightWiki.Infrastructure.Web.Swagger;
+
+public sealed class SwaggerExcludeSchemaFilter : ISchemaFilter
 {
-    public sealed class SwaggerExcludeSchemaFilter : ISchemaFilter
+    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
     {
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        if (schema?.Properties == null)
         {
-            if (schema?.Properties == null)
+            return;
+        }
+
+        var excludedProperties = context.Type.GetProperties()
+            .Where(t => t.GetCustomAttribute<JsonIgnoreAttribute>() != null);
+
+        foreach (PropertyInfo excludedProperty in excludedProperties)
+        {
+            var propertyName = excludedProperty.Name.ToCamelCase();
+
+            if (schema.Properties.ContainsKey(propertyName))
             {
-                return;
-            }
-
-            var excludedProperties = context.Type.GetProperties()
-                .Where(t => t.GetCustomAttribute<JsonIgnoreAttribute>() != null);
-
-            foreach (PropertyInfo excludedProperty in excludedProperties)
-            {
-                var propertyName = excludedProperty.Name.ToCamelCase();
-
-                if (schema.Properties.ContainsKey(propertyName))
-                {
-                    schema.Properties.Remove(propertyName);
-                }
+                schema.Properties.Remove(propertyName);
             }
         }
     }

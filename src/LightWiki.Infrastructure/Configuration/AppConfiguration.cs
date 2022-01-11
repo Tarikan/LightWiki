@@ -1,7 +1,6 @@
-﻿namespace LightWiki.Infrastructure.Configuration
+﻿namespace LightWiki.Infrastructure.Configuration;
+
+public class AppConfiguration
 {
-    public class AppConfiguration
-    {
-        public bool AllowUnauthorizedUse { get; set; }
-    }
+    public bool AllowUnauthorizedUse { get; set; }
 }

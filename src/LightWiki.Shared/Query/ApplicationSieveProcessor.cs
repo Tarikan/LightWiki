@@ -3,30 +3,29 @@ using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;
 
-namespace LightWiki.Shared.Query
+namespace LightWiki.Shared.Query;
+
+public class ApplicationSieveProcessor : SieveProcessor
 {
-    public class ApplicationSieveProcessor : SieveProcessor
+    public ApplicationSieveProcessor(
+        IOptions<SieveOptions> options)
+        : base(options)
     {
-        public ApplicationSieveProcessor(
-            IOptions<SieveOptions> options)
-            : base(options)
-        {
-        }
+    }
 
-        protected override SievePropertyMapper MapProperties(SievePropertyMapper mapper)
-        {
-            mapper.Property<Article>(p => p.Name)
-                .CanFilter()
-                .CanSort();
+    protected override SievePropertyMapper MapProperties(SievePropertyMapper mapper)
+    {
+        mapper.Property<Article>(p => p.Name)
+            .CanFilter()
+            .CanSort();
 
-            mapper.Property<Article>(p => p.UserId)
-                .CanFilter();
+        mapper.Property<Article>(p => p.UserId)
+            .CanFilter();
 
-            mapper.Property<Group>(p => p.Name)
-                .CanSort()
-                .CanFilter();
+        mapper.Property<Group>(p => p.Name)
+            .CanSort()
+            .CanFilter();
 
-            return mapper;
-        }
+        return mapper;
     }
 }

@@ -12,6 +12,7 @@ using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.MediatR;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Web.Authentication;
+using LightWiki.Infrastructure.Web.Extensions;
 using LightWiki.Shared.Query;
 using LightWiki.Wiki.Api.Auth;
 using MediatR;
@@ -29,116 +30,120 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Sieve.Services;
 
-namespace LightWiki.Wiki.Api
+namespace LightWiki.Wiki.Api;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
+        services.AddSingleton(connectionStrings);
+        var appConfiguration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
+        services.AddSingleton(appConfiguration);
+
+        services.AddMediatR(typeof(Startup));
+        AddHandlers(services);
+
+        services.AddJwtAuthentication();
+        services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddTransient<IAuthorizedUserProvider, AuthorizedUserProvider>();
+
+        services.AddDbContext<WikiContext>(opts =>
+            opts.UseNpgsql(connectionStrings.DbConnection)
+                .UseUpperSnakeCaseNamingConvention());
+
+        var mongoClient = new MongoClient(connectionStrings.MongoConnection);
+        services.AddSingleton(mongoClient);
+        services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
+
+        services.AddControllers()
+            .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+        services.AddSwaggerGen(c =>
         {
-            Configuration = configuration;
-        }
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "LightWiki.Wiki.Api", Version = "v1" });
+        });
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        services.AddCors(o => o.AddPolicy("default", corsPolicyBuilder =>
         {
-            var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
-            services.AddSingleton(connectionStrings);
-            var appConfiguration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
-            services.AddSingleton(appConfiguration);
-
-            services.AddMediatR(typeof(Startup));
-            AddHandlers(services);
-
-            services.AddJwtAuthentication();
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IAuthorizedUserProvider, AuthorizedUserProvider>();
-
-            services.AddDbContext<WikiContext>(opts => opts.UseNpgsql(connectionStrings.DbConnection));
-
-            var mongoClient = new MongoClient(connectionStrings.MongoConnection);
-            services.AddSingleton(mongoClient);
-            services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
-
-            services.AddControllers()
-                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "LightWiki.Wiki.Api", Version = "v1" });
-            });
-
-            services.AddCors(o => o.AddPolicy("default", corsPolicyBuilder =>
-            {
-                corsPolicyBuilder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            }));
-            services.AddFluentValidation(options =>
-            {
-                options.AutomaticValidationEnabled = false;
-                options.ConfigureClientsideValidation(enabled: false);
-                options.ValidatorFactoryType = typeof(HttpContextServiceProviderValidatorFactory);
-            });
-            services.AddFluentValidationRulesToSwagger();
-            services.AddHealthChecks();
-
-            services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
-
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
+            corsPolicyBuilder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        }));
+        services.AddFluentValidation(options =>
         {
-            mapper.ConfigurationProvider.AssertConfigurationIsValid();
+            options.AutomaticValidationEnabled = false;
+            options.ConfigureClientsideValidation(enabled: false);
+            options.ValidatorFactoryType = typeof(HttpContextServiceProviderValidatorFactory);
+        });
+        services.AddFluentValidationRulesToSwagger();
+        services.AddHealthChecks();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LightWiki.Wiki.Api v1"));
-            }
+        services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
 
-            app.UseHttpsRedirection();
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    }
 
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        }
-
-        private void AddHandlers(IServiceCollection services)
-        {
-            #region Articles
-
-            services.ForScoped<CreateArticle, SuccessWithId<int>>()
-                .WithValidation<CreateArticleValidator>()
-                .AddHandler<CreateArticleHandler>();
-
-            services.ForScoped<GetArticleContent, ArticleContentModel>()
-                .WithValidation<GetArticleContentValidator>()
-                .AddHandler<GetArticleContentHandler>();
-
-            services.ForScoped<GetArticle, ArticleModel>()
-                .WithValidation<GetArticleValidator>()
-                .AddHandler<GetArticleHandler>();
-
-            services.ForScoped<GetArticles, CollectionResult<ArticleModel>>()
-                .AddHandler<GetArticlesHandler>();
-
-            services.ForScoped<UpdateArticle, Success>()
-                .WithValidation<UpdateArticleValidator>()
-                .AddHandler<UpdateArticleHandler>();
-
-            #endregion
-
-            #region Users
-
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper, WikiContext context)
+    {
+        mapper.ConfigurationProvider.AssertConfigurationIsValid();
             
+        context.Database.Migrate();
 
-            #endregion
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LightWiki.Wiki.Api v1"));
         }
+
+        app.UseHttpsRedirection();
+
+        app.UseExceptionInterception(env);
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+    }
+
+    private void AddHandlers(IServiceCollection services)
+    {
+        #region Articles
+
+        services.ForScoped<CreateArticle, SuccessWithId<int>>()
+            .WithValidation<CreateArticleValidator>()
+            .AddHandler<CreateArticleHandler>();
+
+        services.ForScoped<GetArticleContent, ArticleContentModel>()
+            .WithValidation<GetArticleContentValidator>()
+            .AddHandler<GetArticleContentHandler>();
+
+        services.ForScoped<GetArticle, ArticleModel>()
+            .WithValidation<GetArticleValidator>()
+            .AddHandler<GetArticleHandler>();
+
+        services.ForScoped<GetArticles, CollectionResult<ArticleModel>>()
+            .AddHandler<GetArticlesHandler>();
+
+        services.ForScoped<UpdateArticle, Success>()
+            .WithValidation<UpdateArticleValidator>()
+            .AddHandler<UpdateArticleHandler>();
+
+        #endregion
+
+        #region Users
+
+        #endregion
     }
 }

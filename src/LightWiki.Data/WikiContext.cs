@@ -6,60 +6,54 @@ using LightWiki.Domain.Interfaces;
 using LightWiki.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LightWiki.Data
+namespace LightWiki.Data;
+
+public class WikiContext : DbContext
 {
-    public class WikiContext : DbContext
+    public WikiContext(DbContextOptions opts) : base(opts)
     {
-        public WikiContext(DbContextOptions opts) : base(opts)
+    }
+
+    public DbSet<Article> Articles { get; set; }
+
+    public DbSet<ArticleVersion> ArticleVersions { get; set; }
+
+    public DbSet<User> Users { get; set; }
+
+    public DbSet<Group> Groups { get; set; }
+
+    public DbSet<ArticlePersonalAccessRule> ArticlePersonalAccessRules { get; set; }
+
+    public DbSet<ArticleGroupAccessRule> ArticleGroupAccessRules { get; set; }
+
+    public override Task<int> SaveChangesAsync(
+        bool acceptAllChangesOnSuccess,
+        CancellationToken cancellationToken = default)
+    {
+        var addedEntities = ChangeTracker.Entries()
+            .Where(entry => entry.State == EntityState.Added)
+            .ToList();
+
+        addedEntities.ForEach(entry =>
         {
-        }
-
-        public DbSet<Article> Articles { get; set; }
-
-        public DbSet<ArticleVersion> ArticleVersions { get; set; }
-
-        public DbSet<User> Users { get; set; }
-
-        public DbSet<Group> Groups { get; set; }
-
-        public DbSet<ArticlePersonalAccessRule> ArticlePersonalAccessRules { get; set; }
-
-        public DbSet<ArticleGroupAccessRule> ArticleGroupAccessRules { get; set; }
-
-        public override Task<int> SaveChangesAsync(
-            bool acceptAllChangesOnSuccess,
-            CancellationToken cancellationToken = default)
-        {
-            var addedEntities = ChangeTracker.Entries()
-                .Where(entry => entry.State == EntityState.Added)
-                .ToList();
-
-            addedEntities.ForEach(entry =>
+            if (entry.Entity is ITrackable)
             {
-                if (entry.Entity is ITrackable)
-                {
-                    entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
-                }
-            });
+                entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
+            }
+        });
 
-            var editedEntities = ChangeTracker.Entries()
-                .Where(entry => entry.State == EntityState.Modified)
-                .ToList();
+        var editedEntities = ChangeTracker.Entries()
+            .Where(entry => entry.State == EntityState.Modified)
+            .ToList();
 
-            editedEntities.ForEach(entry =>
-            {
-                if (entry.Entity is ITrackable)
-                {
-                    entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
-                }
-            });
-
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        editedEntities.ForEach(entry =>
         {
-            optionsBuilder.UseSnakeCaseNamingConvention();
-        }
+            if (entry.Entity is ITrackable)
+            {
+                entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
+            }
+        });
+
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 }

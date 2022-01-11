@@ -1,7 +1,6 @@
-﻿namespace LightWiki.Features.Articles.Responses.Models
+﻿namespace LightWiki.Features.Articles.Responses.Models;
+
+public class ArticleContentModel
 {
-    public class ArticleContentModel
-    {
-        public string Text { get; set; }
-    }
+    public string Text { get; set; }
 }

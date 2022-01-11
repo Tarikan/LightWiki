@@ -3,14 +3,13 @@ using LightWiki.Infrastructure.Models;
 using MediatR;
 using OneOf;
 
-namespace LightWiki.Features.Articles.Requests
+namespace LightWiki.Features.Articles.Requests;
+
+public sealed class UpdateArticle : IRequest<OneOf<Success, Fail>>
 {
-    public sealed class UpdateArticle : IRequest<OneOf<Success, Fail>>
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public ArticleAccessRule GlobalAccessRule { get; set; }
-    }
+    public ArticleAccessRule GlobalAccessRule { get; set; }
 }

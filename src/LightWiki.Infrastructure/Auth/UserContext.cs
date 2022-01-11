@@ -1,9 +1,8 @@
-﻿namespace LightWiki.Infrastructure.Auth
-{
-    public class UserContext
-    {
-        public int Id { get; set; }
+﻿namespace LightWiki.Infrastructure.Auth;
 
-        public string Email { get; set; }
-    }
+public class UserContext
+{
+    public int Id { get; set; }
+
+    public string Email { get; set; }
 }

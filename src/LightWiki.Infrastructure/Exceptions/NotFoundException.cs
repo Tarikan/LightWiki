@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace LightWiki.Infrastructure.Exceptions
+namespace LightWiki.Infrastructure.Exceptions;
+
+public class NotFoundException : Exception
 {
-    public class NotFoundException : Exception
+    public NotFoundException(string message) : base(message)
     {
-        public NotFoundException(string message) : base(message)
-        {
-        }
+    }
 
-        public NotFoundException()
-        {
-        }
+    public NotFoundException()
+    {
+    }
 
-        public NotFoundException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+    public NotFoundException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }

@@ -1,16 +1,15 @@
 ﻿using LightWiki.Data.Mongo.Enums;
 
-namespace LightWiki.Data.Mongo.Models
+namespace LightWiki.Data.Mongo.Models;
+
+public class ArticleMd : BaseModel
 {
-    public class ArticleMd : BaseModel
-    {
-        public int ArticleId { get; set; }
+    public int ArticleId { get; set; }
 
-        public string Text { get; set; }
+    public string Text { get; set; }
 
-        public ArticleStoreType ArticleStoreType { get; set; }
+    public ArticleStoreType ArticleStoreType { get; set; }
 
-        // for intermediate records
-        public int? Index { get; set; }
-    }
+    // for intermediate records
+    public int? Index { get; set; }
 }

@@ -2,20 +2,19 @@
 using System.Threading.Tasks;
 using LightWiki.Data.Mongo.Models;
 
-namespace LightWiki.Data.Mongo.Repositories
+namespace LightWiki.Data.Mongo.Repositories;
+
+public interface IBaseRepository<T> where T : BaseModel
 {
-    public interface IBaseRepository<T> where T : BaseModel
-    {
-        Task<List<T>> Get();
+    Task<List<T>> Get();
 
-        Task<T> Get(string id);
+    Task<T> Get(string id);
 
-        Task<T> Create(T entity);
+    Task<T> Create(T entity);
 
-        Task Update(string id, T entityIn);
+    Task Update(string id, T entityIn);
 
-        Task Remove(T entityIn);
+    Task Remove(T entityIn);
 
-        Task Remove(string id);
-    }
+    Task Remove(string id);
 }
