@@ -3,9 +3,9 @@ using DiffMatchPatch;
 
 namespace LightWiki.ArticleEngine.Patches
 {
-    public class ArticleCreator
+    public class PatchHelper : IPatchHelper
     {
-        public ArticleCreator()
+        public PatchHelper()
         {
             _diffMatchPatch = new diff_match_patch();
         }

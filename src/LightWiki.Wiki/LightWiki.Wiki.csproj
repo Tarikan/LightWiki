@@ -29,6 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\LightWiki.ArticleEngine\LightWiki.ArticleEngine.csproj" />
       <ProjectReference Include="..\LightWiki.Data.Mongo\LightWiki.Data.Mongo.csproj" />
       <ProjectReference Include="..\LightWiki.Data\LightWiki.Data.csproj" />
       <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />

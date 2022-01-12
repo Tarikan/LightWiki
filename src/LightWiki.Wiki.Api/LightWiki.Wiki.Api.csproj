@@ -7,7 +7,6 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-        <PackageReference Include="EFCore.NamingConventions" Version="6.0.0" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.6" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.6" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.0" />
@@ -17,10 +16,15 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\LightWiki.ArticleEngine\LightWiki.ArticleEngine.csproj" />
       <ProjectReference Include="..\LightWiki.Infrastructure.Web\LightWiki.Infrastructure.Web.csproj" />
       <ProjectReference Include="..\LightWiki.Wiki\LightWiki.Wiki.csproj" />
     </ItemGroup>

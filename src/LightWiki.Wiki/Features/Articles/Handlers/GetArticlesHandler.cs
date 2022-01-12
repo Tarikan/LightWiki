@@ -42,9 +42,11 @@ public class GetArticlesHandler : IRequestHandler<GetArticles, OneOf<CollectionR
 
         var query =
             _wikiContext.Articles.Where(a => a.GlobalAccessRule >= ArticleAccessRule.Read ||
+                                             userContext != null &&
                                              a.GroupAccessRules.Any(gar =>
                                                  gar.ArticleAccessRule >= ArticleAccessRule.Read &&
                                                  gar.Group.Users.Any(u => u.Id == userContext.Id)) ||
+                                             userContext != null &&
                                              a.PersonalAccessRules.Any(par =>
                                                  par.UserId == userContext.Id &&
                                                  par.ArticleAccessRule >= ArticleAccessRule.Read))

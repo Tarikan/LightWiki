@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightWiki.Data.Migrations
 {
     [DbContext(typeof(WikiContext))]
-    [Migration("20220111132154_InitialMigration")]
+    [Migration("20220112101149_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,19 +28,19 @@ namespace LightWiki.Data.Migrations
                 {
                     b.Property<int>("GroupsId")
                         .HasColumnType("integer")
-                        .HasColumnName("GROUPS_ID");
+                        .HasColumnName("groups_id");
 
                     b.Property<int>("UsersId")
                         .HasColumnType("integer")
-                        .HasColumnName("USERS_ID");
+                        .HasColumnName("users_id");
 
                     b.HasKey("GroupsId", "UsersId")
-                        .HasName("PK_GROUP_USER");
+                        .HasName("pk_group_user");
 
                     b.HasIndex("UsersId")
-                        .HasDatabaseName("IX_GROUP_USER_USERS_ID");
+                        .HasDatabaseName("ix_group_user_users_id");
 
-                    b.ToTable("GROUP_USER", (string)null);
+                    b.ToTable("group_user", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.Article", b =>
@@ -48,37 +48,37 @@ namespace LightWiki.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("ID");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATED_AT");
+                        .HasColumnName("created_at");
 
                     b.Property<int>("GlobalAccessRule")
                         .HasColumnType("integer")
-                        .HasColumnName("GLOBAL_ACCESS_RULE");
+                        .HasColumnName("global_access_rule");
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
-                        .HasColumnName("NAME");
+                        .HasColumnName("name");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATED_AT");
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("USER_ID");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("PK_ARTICLES");
+                        .HasName("pk_articles");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("IX_ARTICLES_USER_ID");
+                        .HasDatabaseName("ix_articles_user_id");
 
-                    b.ToTable("ARTICLES", (string)null);
+                    b.ToTable("articles", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.ArticleGroupAccessRule", b =>
@@ -86,32 +86,32 @@ namespace LightWiki.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("ID");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ArticleAccessRule")
                         .HasColumnType("integer")
-                        .HasColumnName("ARTICLE_ACCESS_RULE");
+                        .HasColumnName("article_access_rule");
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("integer")
-                        .HasColumnName("ARTICLE_ID");
+                        .HasColumnName("article_id");
 
                     b.Property<int>("GroupId")
                         .HasColumnType("integer")
-                        .HasColumnName("GROUP_ID");
+                        .HasColumnName("group_id");
 
                     b.HasKey("Id")
-                        .HasName("PK_ARTICLE_GROUP_ACCESS_RULES");
+                        .HasName("pk_article_group_access_rules");
 
                     b.HasIndex("ArticleId")
-                        .HasDatabaseName("IX_ARTICLE_GROUP_ACCESS_RULES_ARTICLE_ID");
+                        .HasDatabaseName("ix_article_group_access_rules_article_id");
 
                     b.HasIndex("GroupId")
-                        .HasDatabaseName("IX_ARTICLE_GROUP_ACCESS_RULES_GROUP_ID");
+                        .HasDatabaseName("ix_article_group_access_rules_group_id");
 
-                    b.ToTable("ARTICLE_GROUP_ACCESS_RULES", (string)null);
+                    b.ToTable("article_group_access_rules", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.ArticlePersonalAccessRule", b =>
@@ -119,32 +119,32 @@ namespace LightWiki.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("ID");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ArticleAccessRule")
                         .HasColumnType("integer")
-                        .HasColumnName("ARTICLE_ACCESS_RULE");
+                        .HasColumnName("article_access_rule");
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("integer")
-                        .HasColumnName("ARTICLE_ID");
+                        .HasColumnName("article_id");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("USER_ID");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("PK_ARTICLE_PERSONAL_ACCESS_RULES");
+                        .HasName("pk_article_personal_access_rules");
 
                     b.HasIndex("ArticleId")
-                        .HasDatabaseName("IX_ARTICLE_PERSONAL_ACCESS_RULES_ARTICLE_ID");
+                        .HasDatabaseName("ix_article_personal_access_rules_article_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("IX_ARTICLE_PERSONAL_ACCESS_RULES_USER_ID");
+                        .HasDatabaseName("ix_article_personal_access_rules_user_id");
 
-                    b.ToTable("ARTICLE_PERSONAL_ACCESS_RULES", (string)null);
+                    b.ToTable("article_personal_access_rules", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.ArticleVersion", b =>
@@ -152,40 +152,40 @@ namespace LightWiki.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("ID");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("integer")
-                        .HasColumnName("ARTICLE_ID");
+                        .HasColumnName("article_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATED_AT");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Patch")
                         .HasColumnType("text")
-                        .HasColumnName("PATCH");
+                        .HasColumnName("patch");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATED_AT");
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("USER_ID");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("PK_ARTICLE_VERSIONS");
+                        .HasName("pk_article_versions");
 
                     b.HasIndex("ArticleId")
-                        .HasDatabaseName("IX_ARTICLE_VERSIONS_ARTICLE_ID");
+                        .HasDatabaseName("ix_article_versions_article_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("IX_ARTICLE_VERSIONS_USER_ID");
+                        .HasDatabaseName("ix_article_versions_user_id");
 
-                    b.ToTable("ARTICLE_VERSIONS", (string)null);
+                    b.ToTable("article_versions", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.Group", b =>
@@ -193,18 +193,18 @@ namespace LightWiki.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("ID");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
-                        .HasColumnName("NAME");
+                        .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("PK_GROUPS");
+                        .HasName("pk_groups");
 
-                    b.ToTable("GROUPS", (string)null);
+                    b.ToTable("groups", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.User", b =>
@@ -212,26 +212,26 @@ namespace LightWiki.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("ID");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATED_AT");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
-                        .HasColumnName("NAME");
+                        .HasColumnName("name");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATED_AT");
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
-                        .HasName("PK_USERS");
+                        .HasName("pk_users");
 
-                    b.ToTable("USERS", (string)null);
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("GroupUser", b =>
@@ -241,14 +241,14 @@ namespace LightWiki.Data.Migrations
                         .HasForeignKey("GroupsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_GROUP_USER_GROUPS_GROUPS_ID");
+                        .HasConstraintName("fk_group_user_groups_groups_id");
 
                     b.HasOne("LightWiki.Domain.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_GROUP_USER_USERS_USERS_ID");
+                        .HasConstraintName("fk_group_user_users_users_id");
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.Article", b =>
@@ -258,7 +258,7 @@ namespace LightWiki.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ARTICLES_USERS_USER_ID");
+                        .HasConstraintName("fk_articles_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -270,14 +270,14 @@ namespace LightWiki.Data.Migrations
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ARTICLE_GROUP_ACCESS_RULES_ARTICLES_ARTICLE_ID");
+                        .HasConstraintName("fk_article_group_access_rules_articles_article_id");
 
                     b.HasOne("LightWiki.Domain.Models.Group", "Group")
                         .WithMany("ArticleGroupAccessRules")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ARTICLE_GROUP_ACCESS_RULES_GROUPS_GROUP_ID");
+                        .HasConstraintName("fk_article_group_access_rules_groups_group_id");
 
                     b.Navigation("Article");
 
@@ -291,14 +291,14 @@ namespace LightWiki.Data.Migrations
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ARTICLE_PERSONAL_ACCESS_RULES_ARTICLES_ARTICLE_ID");
+                        .HasConstraintName("fk_article_personal_access_rules_articles_article_id");
 
                     b.HasOne("LightWiki.Domain.Models.User", "User")
                         .WithMany("ArticlePersonalAccessRules")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ARTICLE_PERSONAL_ACCESS_RULES_USERS_USER_ID");
+                        .HasConstraintName("fk_article_personal_access_rules_users_user_id");
 
                     b.Navigation("Article");
 
@@ -312,14 +312,14 @@ namespace LightWiki.Data.Migrations
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ARTICLE_VERSIONS_ARTICLES_ARTICLE_ID");
+                        .HasConstraintName("fk_article_versions_articles_article_id");
 
                     b.HasOne("LightWiki.Domain.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ARTICLE_VERSIONS_USERS_USER_ID");
+                        .HasConstraintName("fk_article_versions_users_user_id");
 
                     b.Navigation("Article");
 

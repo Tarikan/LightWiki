@@ -1,6 +1,7 @@
 using System;
 using AutoMapper;
 using FluentValidation.AspNetCore;
+using LightWiki.ArticleEngine.Patches;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Features.Articles.Handlers;
@@ -57,12 +58,13 @@ public class Startup
         services.AddTransient<IAuthorizedUserProvider, AuthorizedUserProvider>();
 
         services.AddDbContext<WikiContext>(opts =>
-            opts.UseNpgsql(connectionStrings.DbConnection)
-                .UseUpperSnakeCaseNamingConvention());
+            opts.UseNpgsql(connectionStrings.DbConnection));
 
         var mongoClient = new MongoClient(connectionStrings.MongoConnection);
         services.AddSingleton(mongoClient);
         services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
+
+        services.AddTransient<IPatchHelper, PatchHelper>();
 
         services.AddControllers()
             .AddNewtonsoftJson(options =>
