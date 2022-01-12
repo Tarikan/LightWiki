@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LightWiki.Wiki.Api.Controllers;
 
+// [Authorize]
 [ApiController]
 [Route("articles")]
 public class ArticleController : ControllerBase
@@ -49,7 +50,8 @@ public class ArticleController : ControllerBase
     }
 
     [HttpGet("{id:int}/content")]
-    [ProducesResponseType(typeof(CollectionResult<ArticleContentModel>), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ArticleContentModel), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetArticleContent(int id)
     {
         var request = new GetArticleContent
@@ -66,9 +68,21 @@ public class ArticleController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    [Authorize]
     public async Task<IActionResult> CreateArticle([FromBody] CreateArticle request)
     {
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
+    
+    [HttpPost("{id:int}/content")]
+    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateArticleContent(int id, [FromBody] UpdateArticleContent request)
+    {
+        request.ArticleId = id;
+
         var result = await _mediator.Send(request);
 
         return result.Match(

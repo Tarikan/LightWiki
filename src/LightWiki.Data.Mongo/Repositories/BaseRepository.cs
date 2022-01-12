@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LightWiki.Data.Mongo.Models;
 using LightWiki.Infrastructure.Configuration;
@@ -13,7 +14,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T>
 
     protected BaseRepository(IMongoDatabase database)
     {
-        Collection = database.GetCollection<T>(nameof(T));
+        Collection = database.GetCollection<T>(typeof(T).Name);
     }
 
     public Task<List<T>> Get() =>
@@ -29,7 +30,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T>
     }
 
     public async Task Update(string id, T entityIn) =>
-        Collection.ReplaceOneAsync(entity => entity.Id == id, entityIn);
+        await Collection.ReplaceOneAsync(entity => entity.Id == id, entityIn);
 
     public Task Remove(T entityIn) =>
         Collection.DeleteOneAsync(entity => entity.Id == entityIn.Id);

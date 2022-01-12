@@ -7,6 +7,9 @@
 
     <ItemGroup>
         <PackageReference Include="DiffMatchPatch" Version="1.0.3" />
+        <PackageReference Include="Markdig" Version="0.26.0" />
+        <PackageReference Include="Markdig.SyntaxHighlighting" Version="1.1.7" />
+        <PackageReference Include="MarkdigExtensions.ImageAsFigure" Version="1.0.0" />
         <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,10 +26,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="MarkDown" />
     </ItemGroup>
 
 </Project>

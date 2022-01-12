@@ -1,6 +1,7 @@
 using System;
 using AutoMapper;
 using FluentValidation.AspNetCore;
+using LightWiki.ArticleEngine.MarkDown;
 using LightWiki.ArticleEngine.Patches;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
@@ -14,6 +15,7 @@ using LightWiki.Infrastructure.MediatR;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
+using LightWiki.Infrastructure.Web.Swagger;
 using LightWiki.Shared.Query;
 using LightWiki.Wiki.Api.Auth;
 using MediatR;
@@ -49,6 +51,8 @@ public class Startup
         services.AddSingleton(connectionStrings);
         var appConfiguration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
         services.AddSingleton(appConfiguration);
+        var oauthConfiguration = Configuration.GetSection("OAuth").Get<OAuthConfiguration>();
+        services.AddSingleton(oauthConfiguration);
 
         services.AddMediatR(typeof(Startup));
         AddHandlers(services);
@@ -61,10 +65,12 @@ public class Startup
             opts.UseNpgsql(connectionStrings.DbConnection));
 
         var mongoClient = new MongoClient(connectionStrings.MongoConnection);
-        services.AddSingleton(mongoClient);
+        services.AddSingleton<IMongoClient>(mongoClient);
         services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
+        services.AddScoped<IArticleMdRepository, ArticleMdRepository>();
 
         services.AddTransient<IPatchHelper, PatchHelper>();
+        services.AddTransient<IMdHelper, MdHelper>();
 
         services.AddControllers()
             .AddNewtonsoftJson(options =>
@@ -73,6 +79,8 @@ public class Startup
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "LightWiki.Wiki.Api", Version = "v1" });
+            c.ConfigureJwt();
+            c.ConfigureCognitoAuth(oauthConfiguration);
         });
 
         services.AddCors(o => o.AddPolicy("default", corsPolicyBuilder =>
@@ -95,7 +103,11 @@ public class Startup
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper, WikiContext context)
+    public void Configure(
+        IApplicationBuilder app,
+        IWebHostEnvironment env,
+        IMapper mapper, WikiContext context,
+        OAuthConfiguration oAuthConfiguration)
     {
         mapper.ConfigurationProvider.AssertConfigurationIsValid();
             
@@ -105,7 +117,12 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LightWiki.Wiki.Api v1"));
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "LightWiki.Wiki.Api v1");
+                c.OAuthClientId(oAuthConfiguration.ClientId);
+                c.OAuthUsePkce();
+            });
         }
 
         app.UseHttpsRedirection();
@@ -113,6 +130,10 @@ public class Startup
         app.UseExceptionInterception(env);
 
         app.UseRouting();
+
+        app.UseCors("default");
+        
+        app.UseAuthentication();
 
         app.UseAuthorization();
 
@@ -141,6 +162,14 @@ public class Startup
         services.ForScoped<UpdateArticle, Success>()
             .WithValidation<UpdateArticleValidator>()
             .AddHandler<UpdateArticleHandler>();
+
+        services.ForScoped<UpdateArticleContent, Success>()
+            .WithValidation<UpdateArticleContentValidator>()
+            .AddHandler<UpdateArticleContentHandler>();
+
+        services.ForScoped<UpdateArticleContent, Success>()
+            .WithValidation<UpdateArticleContentValidator>()
+            .AddHandler<UpdateArticleContentHandler>();
 
         #endregion
 

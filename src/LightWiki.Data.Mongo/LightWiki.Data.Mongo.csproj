@@ -10,7 +10,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MongoDB.Driver" Version="2.13.2"/>
+        <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,12 +18,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="..\LightWiki.Infrastructure\StyleCop\stylecop.json" Link="stylecop.json"/>
+        <AdditionalFiles Include="..\LightWiki.Infrastructure\StyleCop\stylecop.json" Link="stylecop.json" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj"/>
-        <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj"/>
+        <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
+        <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

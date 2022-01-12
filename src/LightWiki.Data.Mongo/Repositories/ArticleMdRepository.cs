@@ -6,14 +6,14 @@ using MongoDB.Driver;
 
 namespace LightWiki.Data.Mongo.Repositories;
 
-public class ArticleHtmlRepository : BaseRepository<ArticleHtml>, IArticleHtmlRepository
+public class ArticleMdRepository : BaseRepository<ArticleMd>, IArticleMdRepository
 {
-    public ArticleHtmlRepository(IMongoClient mongoClient, ConnectionStrings connectionStrings)
+    public ArticleMdRepository(IMongoClient mongoClient, ConnectionStrings connectionStrings)
         : base(mongoClient.GetDatabase(connectionStrings.MongoDatabaseName))
     {
     }
 
-    public async Task<ArticleHtml> GetLatest(int articleId)
+    public async Task<ArticleMd> GetLatest(int articleId)
     {
         return await Collection.Find(article => article.ArticleId == articleId &&
                                                 article.ArticleStoreType ==

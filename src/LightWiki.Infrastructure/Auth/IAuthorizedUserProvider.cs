@@ -1,8 +1,10 @@
-﻿namespace LightWiki.Infrastructure.Auth;
+﻿using System.Threading.Tasks;
+
+namespace LightWiki.Infrastructure.Auth;
 
 public interface IAuthorizedUserProvider
 {
-    public UserContext GetUserOrDefault();
+    public Task<UserContext> GetUserOrDefault();
 
-    public UserContext GetUser();
+    public Task<UserContext> GetUser();
 }

@@ -46,6 +46,7 @@ public static class ServiceCollectionExtensions
                 {
                     OnAuthenticationFailed = (ctx) =>
                     {
+                        Console.WriteLine("Auth failed");
                         Console.WriteLine(ctx.ToString());
                         return Task.CompletedTask;
                     },

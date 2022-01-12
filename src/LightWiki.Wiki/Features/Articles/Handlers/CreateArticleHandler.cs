@@ -30,7 +30,7 @@ public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<
         CreateArticle request,
         CancellationToken cancellationToken)
     {
-        var userContext = _authorizedUserProvider.GetUser();
+        var userContext = await _authorizedUserProvider.GetUser();
         var article = _mapper.Map<Article>(request);
 
         article.Name = article.Name.ToUrlFriendlyString();

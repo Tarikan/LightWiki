@@ -42,9 +42,11 @@ public class GetArticleContentHandler : IRequestHandler<GetArticleContent, OneOf
 
         var article = await _wikiContext.Articles
             .Include(a => a.GroupAccessRules
-                .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
+                .Where(gar => userContext != null &&
+                              gar.Group.Users.Any(u => u.Id == userContext.Id)))
             .Include(a => a.PersonalAccessRules
-                .Where(par => par.UserId == userContext.Id))
+                .Where(par => userContext != null &&
+                              par.UserId == userContext.Id))
             .SingleAsync(a => a.Id == request.ArticleId, cancellationToken);
 
         var accessLevel = article.GlobalAccessRule;
@@ -66,11 +68,11 @@ public class GetArticleContentHandler : IRequestHandler<GetArticleContent, OneOf
             return new Fail("User does not have access to this resource", FailCode.Forbidden);
         }
 
-        var text = (await _articleHtmlRepository.GetLatest(request.ArticleId)).Text;
+        var text = await _articleHtmlRepository.GetLatest(request.ArticleId);
 
         return new ArticleContentModel
         {
-            Text = text,
+            Text = text == null ? string.Empty : text.Text,
         };
     }
 }
