@@ -39,6 +39,7 @@ public class WikiContext : DbContext
             if (entry.Entity is ITrackable)
             {
                 entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
+                entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
             }
         });
 

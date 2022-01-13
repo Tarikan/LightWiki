@@ -1,7 +1,6 @@
 using System;
 using AutoMapper;
 using FluentValidation.AspNetCore;
-using LightWiki.ArticleEngine.MarkDown;
 using LightWiki.ArticleEngine.Patches;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
@@ -9,6 +8,10 @@ using LightWiki.Features.Articles.Handlers;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Features.Articles.Validators;
+using LightWiki.Features.Groups.Handlers;
+using LightWiki.Features.Groups.Requests;
+using LightWiki.Features.Groups.Validators;
+using LightWiki.Features.Users.Responses.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.MediatR;
@@ -67,10 +70,8 @@ public class Startup
         var mongoClient = new MongoClient(connectionStrings.MongoConnection);
         services.AddSingleton<IMongoClient>(mongoClient);
         services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
-        services.AddScoped<IArticleMdRepository, ArticleMdRepository>();
 
         services.AddTransient<IPatchHelper, PatchHelper>();
-        services.AddTransient<IMdHelper, MdHelper>();
 
         services.AddControllers()
             .AddNewtonsoftJson(options =>
@@ -173,7 +174,27 @@ public class Startup
 
         #endregion
 
-        #region Users
+        #region Groups
+
+        services.ForScoped<CreateGroup, Success>()
+            .WithValidation<CreateGroupValidator>()
+            .AddHandler<CreateGroupHandler>();
+
+        services.ForScoped<RemoveGroup, Success>()
+            .WithValidation<RemoveGroupValidator>()
+            .AddHandler<RemoveGroupHandler>();
+
+        services.ForScoped<AddUserToGroup, Success>()
+            .WithValidation<AddUserToGroupValidator>()
+            .AddHandler<AddUserToGroupHandler>();
+
+        services.ForScoped<RemoveUserFromGroup, Success>()
+            .WithValidation<RemoveUserFromGroupValidator>()
+            .AddHandler<RemoveUserFromGroupHandler>();
+
+        services.ForScoped<GetGroupMembers, CollectionResult<UserModel>>()
+            .WithValidation<GetGroupMembersValidator>()
+            .AddHandler<GetGroupMembersHandler>();
 
         #endregion
     }
