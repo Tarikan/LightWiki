@@ -1,11 +1,14 @@
-﻿namespace LightWiki.Domain.Enums
+﻿using System;
+
+namespace LightWiki.Domain.Enums
 {
-    public enum ArticleAccessRule
+    [Flags]
+    public enum ArticleAccessRule : int
     {
-        // No access to resource
         None = 0,
         Read = 1,
-        ReadWrite = 2,
-        ReadWriteModify = 3,
+        Write = 1 << 1,
+        Modify = 1 << 2,
+        All = Read | Write | Modify,
     }
 }

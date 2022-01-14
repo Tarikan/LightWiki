@@ -3,29 +3,24 @@ using LightWiki.Data;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
-using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Validators;
 using LightWiki.Shared.Validation;
 
 namespace LightWiki.Features.Articles.Validators;
 
-public class GetArticleContentValidator : AbstractValidator<GetArticleContent>
+public class AddPersonalAccessValidator : AbstractValidator<AddPersonalAccess>
 {
-    public GetArticleContentValidator(
-        WikiContext wikiContext,
-        IAuthorizedUserProvider authorizedUserProvider,
-        AppConfiguration settings)
+    public AddPersonalAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
     {
-        RuleFor(x => x.ArticleId)
+        RuleFor(r => r.ArticleId)
             .Cascade(CascadeMode.Stop)
             .EntityShouldExist(wikiContext.Articles)
             .WithErrorCode(FailCode.BadRequest.ToString())
-            .UserShouldHaveAccess(
-                wikiContext.Articles,
-                authorizedUserProvider,
-                ArticleAccessRule.Read,
-                settings.AllowUnauthorizedUse)
+            .UserShouldHaveAccess(wikiContext.Articles, authorizedUserProvider, ArticleAccessRule.Modify)
             .WithErrorCode(FailCode.Forbidden.ToString());
+
+        RuleFor(r => r.UserId)
+            .EntityShouldExist(wikiContext.Users);
     }
 }

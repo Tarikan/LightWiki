@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <CodeAnalysisRuleSet>..\LightWiki.Infrastructure\StyleCop\StyleCopRules.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,20 +14,28 @@
         <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="5.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
         <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LightWiki.ArticleEngine\LightWiki.ArticleEngine.csproj" />
-      <ProjectReference Include="..\LightWiki.Infrastructure.Web\LightWiki.Infrastructure.Web.csproj" />
-      <ProjectReference Include="..\LightWiki.Wiki\LightWiki.Wiki.csproj" />
+        <ProjectReference Include="..\LightWiki.ArticleEngine\LightWiki.ArticleEngine.csproj" />
+        <ProjectReference Include="..\LightWiki.Infrastructure.Web\LightWiki.Infrastructure.Web.csproj" />
+        <ProjectReference Include="..\LightWiki.Wiki\LightWiki.Wiki.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="..\LightWiki.Infrastructure\StyleCop\stylecop.json" Link="stylecop.json" />
     </ItemGroup>
 
 </Project>

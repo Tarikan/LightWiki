@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LightWiki.Data.Configurations;
 using LightWiki.Domain.Interfaces;
 using LightWiki.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -61,5 +62,10 @@ public class WikiContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSnakeCaseNamingConvention();
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfiguration(new ArticleConfiguration());
     }
 }

@@ -5,12 +5,15 @@ using LightWiki.Infrastructure.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
-namespace LightWiki.Wiki.Api.Auth;
+namespace LightWiki.Auth;
 
 public class AuthorizedUserProvider : IAuthorizedUserProvider
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly WikiContext _wikiContext;
+
+    private UserContext _cachedUserContext;
+    private bool _isUserContextSet;
 
     public AuthorizedUserProvider(IHttpContextAccessor httpContextAccessor, WikiContext wikiContext)
     {
@@ -20,12 +23,24 @@ public class AuthorizedUserProvider : IAuthorizedUserProvider
 
     public async Task<UserContext> GetUserOrDefault()
     {
+        if (_isUserContextSet)
+        {
+            return _cachedUserContext.Clone() as UserContext;
+        }
+
         var httpContext = _httpContextAccessor.HttpContext;
 
         var userIdClaim = httpContext?.User
             .Claims
-            .FirstOrDefault(c => c.Type == "custom:public_id")
+            .FirstOrDefault(c => c.Type == "custom:internal_id")
             ?.Value;
+
+        var canParseId = int.TryParse(userIdClaim, out var userId);
+
+        if (!canParseId)
+        {
+            throw new InvalidUserIdFormatException();
+        }
 
         var userEmailClaim = httpContext?.User
             .Claims
@@ -37,18 +52,21 @@ public class AuthorizedUserProvider : IAuthorizedUserProvider
             return null;
         }
 
-        var user = await _wikiContext.Users.SingleOrDefaultAsync(u => u.PublicId == userIdClaim);
-
-        if (user is null)
+        if (!await _wikiContext.Users.AnyAsync(u => u.Id == userId))
         {
-            return null;
+            throw new UserNotFoundException();
         }
 
-        return new UserContext
+        var userContext = new UserContext
         {
-            Id = user.Id,
+            Id = userId,
             Email = userEmailClaim,
         };
+
+        _cachedUserContext = userContext;
+        _isUserContextSet = true;
+
+        return userContext;
     }
 
     public async Task<UserContext> GetUser()

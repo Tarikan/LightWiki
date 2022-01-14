@@ -1,10 +1,10 @@
-using LightWiki.Infrastructure.Extensions;
+﻿using LightWiki.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
 namespace LightWiki.Wiki.Api;
 
-public class Program
+public sealed class Program
 {
     public static void Main(string[] args)
     {

@@ -9,8 +9,8 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
         <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <PrivateAssets>all</PrivateAssets>
@@ -23,18 +23,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Users\Handlers" />
-      <Folder Include="Features\Users\Requests" />
-      <Folder Include="Features\Users\Validators" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\LightWiki.ArticleEngine\LightWiki.ArticleEngine.csproj" />
-      <ProjectReference Include="..\LightWiki.Data.Mongo\LightWiki.Data.Mongo.csproj" />
-      <ProjectReference Include="..\LightWiki.Data\LightWiki.Data.csproj" />
-      <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
-      <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj" />
-      <ProjectReference Include="..\LightWiki.Shared\LightWiki.Shared.csproj" />
+        <ProjectReference Include="..\LightWiki.ArticleEngine\LightWiki.ArticleEngine.csproj" />
+        <ProjectReference Include="..\LightWiki.Data.Mongo\LightWiki.Data.Mongo.csproj" />
+        <ProjectReference Include="..\LightWiki.Data\LightWiki.Data.csproj" />
+        <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
+        <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj" />
+        <ProjectReference Include="..\LightWiki.Shared\LightWiki.Shared.csproj" />
     </ItemGroup>
 
 </Project>

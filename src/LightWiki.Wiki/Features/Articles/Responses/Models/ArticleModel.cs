@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
+using LightWiki.Features.Articles.Requests.Models;
 
 namespace LightWiki.Features.Articles.Responses.Models;
 
@@ -17,7 +18,9 @@ public class ArticleModel
 
     public DateTime CreatedAt { get; set; }
 
-    public ArticleAccessRule GlobalAccessRule { get; set; }
-    // public List<ArticleGroupAccessRule> GroupAccessRules { get; set; }
-    // public List<ArticlePersonalAccessRule> PersonalAccessRules { get; set; }
+    public RequestAccessModel GlobalAccessRule { get; set; }
+
+    public List<ArticleGroupAccessRuleModel> GroupAccessRules { get; set; }
+
+    public List<ArticlePersonalAccessRuleModel> PersonalAccessRules { get; set; }
 }

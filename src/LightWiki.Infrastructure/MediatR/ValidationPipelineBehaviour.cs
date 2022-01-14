@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -31,9 +33,18 @@ public class ValidationPipelineBehaviour<TRequest, TResult> : IPipelineBehavior<
                 result.Errors.ToLookup(
                     f => string.IsNullOrEmpty(f.PropertyName) ? "validationErrors" : f.PropertyName,
                     f => f.ErrorMessage);
+            var codes = new List<FailCode>();
+            foreach (var error in result.Errors.Select(e => e.ErrorCode).Distinct())
+            {
+                if (Enum.TryParse<FailCode>(error, out var code))
+                {
+                    codes.Add(code);
+                }
+            }
+
             return new Fail(
                 errors,
-                FailCode.BadRequest);
+                codes.Any() ? codes.Max() : FailCode.BadRequest);
         }
 
         return await next();

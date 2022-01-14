@@ -6,9 +6,11 @@ using OneOf;
 
 namespace LightWiki.Features.Articles.Requests;
 
-public sealed class CreateArticle : IRequest<OneOf<SuccessWithId<int>, Fail>>
+public class AddGroupAccess : IRequest<OneOf<Success, Fail>>
 {
-    public string Name { get; set; }
+    public int ArticleId { get; set; }
 
-    public ArticleAccessRule GlobalAccessRule { get; set; }
+    public int GroupId { get; set; }
+
+    public ArticleAccessRule AccessRule { get; set; }
 }

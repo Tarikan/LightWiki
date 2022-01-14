@@ -10,8 +10,6 @@ namespace LightWiki.Domain.Models
 
         public string Email { get; set; }
 
-        public string PublicId { get; set; }
-
         public string Name { get; set; }
 
         public List<Group> Groups { get; set; }

@@ -50,6 +50,8 @@ public class GetArticlesHandler : IRequestHandler<GetArticles, OneOf<CollectionR
                                              a.PersonalAccessRules.Any(par =>
                                                  par.UserId == userContext.Id &&
                                                  par.ArticleAccessRule >= ArticleAccessRule.Read))
+                .Include(a => a.GroupAccessRules)
+                .Include(a => a.PersonalAccessRules)
                 .AsNoTracking();
         var total = await query.CountAsync(cancellationToken);
 

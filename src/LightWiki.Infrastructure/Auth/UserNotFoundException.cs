@@ -1,8 +1,9 @@
 ﻿using System;
+using LightWiki.Infrastructure.Exceptions;
 
 namespace LightWiki.Infrastructure.Auth;
 
-public class UserNotFoundException : Exception
+public class UserNotFoundException : UnauthorizedException
 {
     public UserNotFoundException(string message) : base(message)
     {

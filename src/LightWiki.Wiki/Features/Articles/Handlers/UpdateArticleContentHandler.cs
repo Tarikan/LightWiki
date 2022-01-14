@@ -1,15 +1,18 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LightWiki.ArticleEngine.Patches;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Enums;
 using LightWiki.Data.Mongo.Models;
 using LightWiki.Data.Mongo.Repositories;
+using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace LightWiki.Features.Articles.Handlers;
@@ -36,7 +39,6 @@ public class UpdateArticleContentHandler : IRequestHandler<UpdateArticleContent,
     public async Task<OneOf<Success, Fail>> Handle(UpdateArticleContent request, CancellationToken cancellationToken)
     {
         var userContext = await _authorizedUserProvider.GetUser();
-        await _context.Articles.FindAsync(request.ArticleId);
 
         var lastHtmlArticle = await _articleHtmlRepository.GetLatest(request.ArticleId);
 

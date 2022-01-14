@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using LightWiki.ArticleEngine.Patches;
+using LightWiki.Auth;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Features.Articles.Handlers;
@@ -11,7 +12,10 @@ using LightWiki.Features.Articles.Validators;
 using LightWiki.Features.Groups.Handlers;
 using LightWiki.Features.Groups.Requests;
 using LightWiki.Features.Groups.Validators;
+using LightWiki.Features.Users.Handlers;
+using LightWiki.Features.Users.Requests;
 using LightWiki.Features.Users.Responses.Models;
+using LightWiki.Features.Users.Validators;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.MediatR;
@@ -20,7 +24,6 @@ using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
 using LightWiki.Infrastructure.Web.Swagger;
 using LightWiki.Shared.Query;
-using LightWiki.Wiki.Api.Auth;
 using MediatR;
 using MicroElements.Swashbuckle.FluentValidation;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
@@ -34,6 +37,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Newtonsoft.Json.Serialization;
 using Sieve.Services;
 
 namespace LightWiki.Wiki.Api;
@@ -75,7 +79,10 @@ public class Startup
 
         services.AddControllers()
             .AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+            });
 
         services.AddSwaggerGen(c =>
         {
@@ -107,11 +114,12 @@ public class Startup
     public void Configure(
         IApplicationBuilder app,
         IWebHostEnvironment env,
-        IMapper mapper, WikiContext context,
-        OAuthConfiguration oAuthConfiguration)
+        IMapper mapper,
+        WikiContext context,
+        OAuthConfiguration oauthConfiguration)
     {
         mapper.ConfigurationProvider.AssertConfigurationIsValid();
-            
+
         context.Database.Migrate();
 
         if (env.IsDevelopment())
@@ -121,7 +129,7 @@ public class Startup
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "LightWiki.Wiki.Api v1");
-                c.OAuthClientId(oAuthConfiguration.ClientId);
+                c.OAuthClientId(oauthConfiguration.ClientId);
                 c.OAuthUsePkce();
             });
         }
@@ -133,7 +141,7 @@ public class Startup
         app.UseRouting();
 
         app.UseCors("default");
-        
+
         app.UseAuthentication();
 
         app.UseAuthorization();
@@ -141,7 +149,7 @@ public class Startup
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 
-    private void AddHandlers(IServiceCollection services)
+    private static void AddHandlers(IServiceCollection services)
     {
         #region Articles
 
@@ -172,6 +180,14 @@ public class Startup
             .WithValidation<UpdateArticleContentValidator>()
             .AddHandler<UpdateArticleContentHandler>();
 
+        services.ForScoped<AddGroupAccess, Success>()
+            .WithValidation<AddGroupAccessValidator>()
+            .AddHandler<AddGroupAccessHandler>();
+
+        services.ForScoped<AddPersonalAccess, Success>()
+            .WithValidation<AddPersonalAccessValidator>()
+            .AddHandler<AddPersonalAccessHandler>();
+
         #endregion
 
         #region Groups
@@ -195,6 +211,14 @@ public class Startup
         services.ForScoped<GetGroupMembers, CollectionResult<UserModel>>()
             .WithValidation<GetGroupMembersValidator>()
             .AddHandler<GetGroupMembersHandler>();
+
+        #endregion
+
+        #region Users
+
+        services.ForScoped<GetUser, UserModel>()
+            .WithValidation<GetUserValidator>()
+            .AddHandler<GetUserHandler>();
 
         #endregion
     }

@@ -31,7 +31,7 @@ public class GroupController : ControllerBase
         };
 
         var result = await _mediator.Send(request);
-        
+
         return result.Match(
             Ok,
             fail => fail.ToActionResult());
@@ -42,7 +42,7 @@ public class GroupController : ControllerBase
     public async Task<IActionResult> CreateGroup([FromBody] CreateGroup request)
     {
         var result = await _mediator.Send(request);
-        
+
         return result.Match(
             Ok,
             fail => fail.ToActionResult());
@@ -58,7 +58,7 @@ public class GroupController : ControllerBase
         };
 
         var result = await _mediator.Send(request);
-        
+
         return result.Match(
             Ok,
             fail => fail.ToActionResult());
@@ -71,7 +71,7 @@ public class GroupController : ControllerBase
         request.GroupId = id;
 
         var result = await _mediator.Send(request);
-        
+
         return result.Match(
             Ok,
             fail => fail.ToActionResult());
@@ -82,9 +82,9 @@ public class GroupController : ControllerBase
     public async Task<IActionResult> RemoveUserFromGroup(int id, [FromBody] RemoveUserFromGroup request)
     {
         request.GroupId = id;
-        
+
         var result = await _mediator.Send(request);
-        
+
         return result.Match(
             Ok,
             fail => fail.ToActionResult());

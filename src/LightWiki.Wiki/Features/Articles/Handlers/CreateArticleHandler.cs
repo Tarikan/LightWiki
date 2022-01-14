@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightWiki.Data;
+using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
@@ -48,6 +49,16 @@ public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<
 
         await _wikiContext.AddAsync(version, cancellationToken);
         await _wikiContext.Articles.AddAsync(article, cancellationToken);
+        await _wikiContext.SaveChangesAsync(cancellationToken);
+
+        var personalAccess = new ArticlePersonalAccessRule
+        {
+            UserId = userContext.Id,
+            ArticleId = article.Id,
+            ArticleAccessRule = ArticleAccessRule.All,
+        };
+
+        await _wikiContext.ArticlePersonalAccessRules.AddAsync(personalAccess, cancellationToken);
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
         return new SuccessWithId<int>(article.Id);
