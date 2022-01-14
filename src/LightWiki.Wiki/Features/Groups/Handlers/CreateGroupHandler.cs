@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using LightWiki.Data;
 using LightWiki.Domain.Models;
@@ -29,9 +30,11 @@ public class CreateGroupHandler : IRequestHandler<CreateGroup, OneOf<Success, Fa
         var group = new Group
         {
             Name = request.GroupName,
+            Users = new List<User>
+            {
+                user,
+            },
         };
-
-        group.Users.Add(user);
 
         await _wikiContext.Groups.AddAsync(group, cancellationToken);
 

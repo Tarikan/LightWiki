@@ -40,4 +40,26 @@ public class ArticleAccessController : ControllerBase
             Ok,
             fail => fail.ToActionResult());
     }
+
+    [HttpPost("remove-personal")]
+    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemovePersonalAccess([FromBody] RemovePersonalAccess request)
+    {
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
+
+    [HttpPost("remove-group")]
+    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemoveGroupAccess([FromBody] RemoveGroupAccess request)
+    {
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
 }

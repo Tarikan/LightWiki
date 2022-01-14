@@ -67,5 +67,9 @@ public class WikiContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new ArticleConfiguration());
+        modelBuilder.ApplyConfiguration(new ArticleGroupAccessRuleConfiguration());
+        modelBuilder.ApplyConfiguration(new ArticlePersonalAccessRuleConfiguration());
+        modelBuilder.ApplyConfiguration(new GroupConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
     }
 }

@@ -8,5 +8,5 @@ public class RemovePersonalAccess : IRequest<OneOf<Success, Fail>>
 {
     public int ArticleId { get; set; }
 
-    public string UserPublicId { get; set; }
+    public int UserId { get; set; }
 }

@@ -32,7 +32,7 @@ public class AuthorizedUserProvider : IAuthorizedUserProvider
 
         var userIdClaim = httpContext?.User
             .Claims
-            .FirstOrDefault(c => c.Type == "custom:internal_id")
+            .FirstOrDefault(c => c.Type == "custom:public_id")
             ?.Value;
 
         var canParseId = int.TryParse(userIdClaim, out var userId);

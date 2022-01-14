@@ -21,16 +21,19 @@ public class AddPersonalAccessHandler : IRequestHandler<AddPersonalAccess, OneOf
 
     public async Task<OneOf<Success, Fail>> Handle(AddPersonalAccess request, CancellationToken cancellationToken)
     {
-        var user = await _wikiContext.Users.FindAsync(request.UserId);
+        var access = await _wikiContext.ArticlePersonalAccessRules.FirstOrDefaultAsync(
+            r =>
+            r.UserId == request.UserId &&
+            r.ArticleId == request.ArticleId,
+            cancellationToken);
 
-        var access = new ArticlePersonalAccessRule
-        {
-            User = user,
-            ArticleId = request.ArticleId,
-            ArticleAccessRule = request.AccessRule,
-        };
+        access ??= new ArticlePersonalAccessRule();
 
-        await _wikiContext.ArticlePersonalAccessRules.AddAsync(access, cancellationToken);
+        access.UserId = request.UserId;
+        access.ArticleId = request.ArticleId;
+        access.ArticleAccessRule = request.AccessRule;
+
+        _wikiContext.ArticlePersonalAccessRules.Update(access);
 
         await _wikiContext.SaveChangesAsync(cancellationToken);
 

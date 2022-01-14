@@ -6,6 +6,7 @@ using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace LightWiki.Features.Articles.Handlers;
@@ -21,14 +22,19 @@ public class AddGroupAccessHandler : IRequestHandler<AddGroupAccess, OneOf<Succe
 
     public async Task<OneOf<Success, Fail>> Handle(AddGroupAccess request, CancellationToken cancellationToken)
     {
-        var access = new ArticleGroupAccessRule
-        {
-            GroupId = request.GroupId,
-            ArticleId = request.ArticleId,
-            ArticleAccessRule = request.AccessRule,
-        };
+        var access = await _wikiContext.ArticleGroupAccessRules
+            .SingleOrDefaultAsync(
+                r => r.GroupId == request.GroupId &&
+                     r.ArticleId == request.ArticleId,
+                cancellationToken);
 
-        await _wikiContext.ArticleGroupAccessRules.AddAsync(access, cancellationToken);
+        access ??= new ArticleGroupAccessRule();
+
+        access.GroupId = request.GroupId;
+        access.ArticleId = request.ArticleId;
+        access.ArticleAccessRule = request.AccessRule;
+
+        _wikiContext.ArticleGroupAccessRules.Update(access);
 
         await _wikiContext.SaveChangesAsync(cancellationToken);
 

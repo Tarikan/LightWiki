@@ -190,6 +190,26 @@ public class Startup
 
         #endregion
 
+        #region ArticleAccess
+
+        services.ForScoped<AddPersonalAccess, Success>()
+            .WithValidation<AddPersonalAccessValidator>()
+            .AddHandler<AddPersonalAccessHandler>();
+
+        services.ForScoped<AddGroupAccess, Success>()
+            .WithValidation<AddGroupAccessValidator>()
+            .AddHandler<AddGroupAccessHandler>();
+
+        services.ForScoped<RemovePersonalAccess, Success>()
+            .WithValidation<RemovePersonalAccessValidator>()
+            .AddHandler<RemovePersonalAccessHandler>();
+
+        services.ForScoped<RemoveGroupAccess, Success>()
+            .WithValidation<RemoveGroupAccessValidator>()
+            .AddHandler<RemoveGroupAccessHandler>();
+
+        #endregion
+
         #region Groups
 
         services.ForScoped<CreateGroup, Success>()

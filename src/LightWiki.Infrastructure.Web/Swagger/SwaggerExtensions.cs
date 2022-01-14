@@ -62,13 +62,7 @@ public static class SwaggerExtensions
                     AuthorizationUrl =
                         new Uri($"{settings.AuthServerDomain}/oauth2/authorize"),
                     TokenUrl = new Uri($"{settings.AuthServerDomain}/oauth2/token"),
-                    Scopes = new Dictionary<string, string>
-                    {
-                        { "openid", "openid" },
-                        { "profile", "profile" },
-                        { "email", "email" },
-                        { "phone", "phone" },
-                    },
+                    RefreshUrl = null,
                 },
             },
         });

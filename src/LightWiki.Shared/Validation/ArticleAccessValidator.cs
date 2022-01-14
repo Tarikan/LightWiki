@@ -42,19 +42,37 @@ public class ArticleAccessValidator : AbstractValidator<int>
 
                 article = await articles
                     .Include(a => a.PersonalAccessRules
-                        .Where(par => par.UserId == userContext.Id &&
-                                      par.ArticleAccessRule.HasFlag(minimalRule)))
+                        .Where(par => par.UserId == userContext.Id))
                     .Include(a => a.GroupAccessRules
-                        .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id) &&
-                                      gar.ArticleAccessRule.HasFlag(minimalRule)))
+                        .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
                     .SingleAsync(a => a.Id == id);
 
-                if (article.GlobalAccessRule < minimalRule &&
-                    !article.GroupAccessRules.Any() &&
-                    !article.PersonalAccessRules.Any())
+                if (article.PersonalAccessRules.Any())
+                {
+                    var personalRule = article.PersonalAccessRules.First();
+                    if (!personalRule.ArticleAccessRule.HasFlag(minimalRule))
+                    {
+                        ctx.AddFailure("Access denied");
+                    }
+
+                    return;
+                }
+
+                if (article.GroupAccessRules.Any())
+                {
+                    var groupRule = article.GroupAccessRules.First();
+
+                    if (!groupRule.ArticleAccessRule.HasFlag(minimalRule))
+                    {
+                        ctx.AddFailure("Access denied");
+                    }
+
+                    return;
+                }
+
+                if (!article.GlobalAccessRule.HasFlag(minimalRule))
                 {
                     ctx.AddFailure("Access denied");
-                    return;
                 }
             });
     }
