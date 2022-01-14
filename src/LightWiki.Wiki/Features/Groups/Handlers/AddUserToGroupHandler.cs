@@ -1,6 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using LightWiki.Data;
+using LightWiki.Domain.Models;
 using LightWiki.Features.Groups.Requests;
 using LightWiki.Infrastructure.Models;
 using MediatR;
@@ -21,6 +23,8 @@ public class AddUserToGroupHandler : IRequestHandler<AddUserToGroup, OneOf<Succe
     {
         var group = await _context.Groups.FindAsync(request.GroupId);
         var user = await _context.Users.FindAsync(request.UserId);
+
+        group.Users ??= new List<User>();
 
         group.Users.Add(user);
 

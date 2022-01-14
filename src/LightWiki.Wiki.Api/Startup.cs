@@ -212,7 +212,7 @@ public class Startup
 
         #region Groups
 
-        services.ForScoped<CreateGroup, Success>()
+        services.ForScoped<CreateGroup, SuccessWithId<int>>()
             .WithValidation<CreateGroupValidator>()
             .AddHandler<CreateGroupHandler>();
 

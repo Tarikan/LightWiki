@@ -19,7 +19,7 @@ public class UpdateArticleContentValidator : AbstractValidator<UpdateArticleCont
             .Cascade(CascadeMode.Stop)
             .EntityShouldExist(wikiContext.Articles)
             .WithErrorCode(FailCode.BadRequest.ToString())
-            .UserShouldHaveAccess(wikiContext.Articles, authorizedUserProvider, ArticleAccessRule.Write)
+            .UserShouldHaveAccessToArticle(wikiContext.Articles, authorizedUserProvider, ArticleAccessRule.Write)
             .WithErrorCode(FailCode.Forbidden.ToString());
 
         RuleFor(x => x.Text).NotEmpty();

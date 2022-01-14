@@ -17,7 +17,7 @@ public class AddPersonalAccessValidator : AbstractValidator<AddPersonalAccess>
             .Cascade(CascadeMode.Stop)
             .EntityShouldExist(wikiContext.Articles)
             .WithErrorCode(FailCode.BadRequest.ToString())
-            .UserShouldHaveAccess(wikiContext.Articles, authorizedUserProvider, ArticleAccessRule.Modify)
+            .UserShouldHaveAccessToArticle(wikiContext.Articles, authorizedUserProvider, ArticleAccessRule.Modify)
             .WithErrorCode(FailCode.Forbidden.ToString());
 
         RuleFor(r => r.UserId)

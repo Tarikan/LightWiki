@@ -21,7 +21,7 @@ public class GetArticleContentValidator : AbstractValidator<GetArticleContent>
             .Cascade(CascadeMode.Stop)
             .EntityShouldExist(wikiContext.Articles)
             .WithErrorCode(FailCode.BadRequest.ToString())
-            .UserShouldHaveAccess(
+            .UserShouldHaveAccessToArticle(
                 wikiContext.Articles,
                 authorizedUserProvider,
                 ArticleAccessRule.Read,

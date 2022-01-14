@@ -60,9 +60,11 @@ public class ArticleAccessValidator : AbstractValidator<int>
 
                 if (article.GroupAccessRules.Any())
                 {
-                    var groupRule = article.GroupAccessRules.First();
+                    var groupRule = article.GroupAccessRules
+                        .Select(gar => gar.ArticleAccessRule)
+                        .Aggregate(ArticleAccessRule.None, (acc, x) => acc | x);
 
-                    if (!groupRule.ArticleAccessRule.HasFlag(minimalRule))
+                    if (!groupRule.HasFlag(minimalRule))
                     {
                         ctx.AddFailure("Access denied");
                     }

@@ -38,7 +38,7 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SuccessWithId<int>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateGroup([FromBody] CreateGroup request)
     {
         var result = await _mediator.Send(request);

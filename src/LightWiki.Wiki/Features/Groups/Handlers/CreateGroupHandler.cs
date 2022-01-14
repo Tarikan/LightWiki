@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using LightWiki.Data;
+using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Groups.Requests;
 using LightWiki.Infrastructure.Auth;
@@ -11,7 +12,7 @@ using OneOf;
 
 namespace LightWiki.Features.Groups.Handlers;
 
-public class CreateGroupHandler : IRequestHandler<CreateGroup, OneOf<Success, Fail>>
+public class CreateGroupHandler : IRequestHandler<CreateGroup, OneOf<SuccessWithId<int>, Fail>>
 {
     private readonly WikiContext _wikiContext;
     private readonly IAuthorizedUserProvider _authorizedUserProvider;
@@ -22,7 +23,7 @@ public class CreateGroupHandler : IRequestHandler<CreateGroup, OneOf<Success, Fa
         _authorizedUserProvider = authorizedUserProvider;
     }
 
-    public async Task<OneOf<Success, Fail>> Handle(CreateGroup request, CancellationToken cancellationToken)
+    public async Task<OneOf<SuccessWithId<int>, Fail>> Handle(CreateGroup request, CancellationToken cancellationToken)
     {
         var userContext = await _authorizedUserProvider.GetUser();
         var user = await _wikiContext.Users.FindAsync(userContext.Id);
@@ -34,12 +35,20 @@ public class CreateGroupHandler : IRequestHandler<CreateGroup, OneOf<Success, Fa
             {
                 user,
             },
+            GroupPersonalAccessRules = new List<GroupPersonalAccessRule>
+            {
+                new GroupPersonalAccessRule
+                {
+                    User = user,
+                    AccessRule = GroupAccessRule.All,
+                },
+            },
         };
 
         await _wikiContext.Groups.AddAsync(group, cancellationToken);
 
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
-        return new Success();
+        return new SuccessWithId<int>(group.Id);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using LightWiki.Domain.Enums;
 
 namespace LightWiki.Domain.Models
 {
@@ -8,8 +9,12 @@ namespace LightWiki.Domain.Models
 
         public string Name { get; set; }
 
+        public GroupAccessRule GroupAccessRule { get; set; }
+
         public List<User> Users { get; set; }
 
         public List<ArticleGroupAccessRule> ArticleGroupAccessRules { get; set; }
+
+        public List<GroupPersonalAccessRule> GroupPersonalAccessRules { get; set; }
     }
 }
