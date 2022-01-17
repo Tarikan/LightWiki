@@ -69,6 +69,8 @@ public class UpdateArticleContentHandler : IRequestHandler<UpdateArticleContent,
 
         await _articleHtmlRepository.Create(newHtml);
 
+        await _context.SaveChangesAsync(cancellationToken);
+
         return new Success();
     }
 }

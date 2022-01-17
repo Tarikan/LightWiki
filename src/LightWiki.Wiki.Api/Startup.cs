@@ -9,6 +9,10 @@ using LightWiki.Features.Articles.Handlers;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Features.Articles.Validators;
+using LightWiki.Features.ArticleVersions.Handlers;
+using LightWiki.Features.ArticleVersions.Requests;
+using LightWiki.Features.ArticleVersions.Responses.Models;
+using LightWiki.Features.ArticleVersions.Validators;
 using LightWiki.Features.Groups.Handlers;
 using LightWiki.Features.Groups.Requests;
 using LightWiki.Features.Groups.Validators;
@@ -251,6 +255,18 @@ public class Startup
         services.ForScoped<GetUser, UserModel>()
             .WithValidation<GetUserValidator>()
             .AddHandler<GetUserHandler>();
+
+        #endregion
+
+        #region ArticleVersions
+
+        services.ForScoped<GetArticleVersions, CollectionResult<ArticleVersionModel>>()
+            .WithValidation<GetArticleVersionsValidator>()
+            .AddHandler<GetArticleVersionsHandler>();
+
+        services.ForScoped<GetArticleVersionContent, ArticleContentModel>()
+            .WithValidation<GetArticleVersionContentValidator>()
+            .AddHandler<GetArticleVersionContentHandler>();
 
         #endregion
     }

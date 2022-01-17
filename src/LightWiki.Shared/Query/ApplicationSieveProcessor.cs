@@ -26,6 +26,13 @@ public class ApplicationSieveProcessor : SieveProcessor
             .CanSort()
             .CanFilter();
 
+        mapper.Property<ArticleVersion>(p => p.CreatedAt)
+            .CanFilter()
+            .CanSort();
+
+        mapper.Property<ArticleVersion>(p => p.UserId)
+            .CanFilter();
+
         return mapper;
     }
 }
