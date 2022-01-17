@@ -17,7 +17,7 @@ namespace LightWiki.Data.Migrations
                 defaultValue: 0);
 
             migrationBuilder.CreateTable(
-                name: "group_personal_access_rule",
+                name: "group_personal_access_rules",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
@@ -28,15 +28,15 @@ namespace LightWiki.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_group_personal_access_rule", x => x.id);
+                    table.PrimaryKey("pk_group_personal_access_rules", x => x.id);
                     table.ForeignKey(
-                        name: "fk_group_personal_access_rule_groups_group_id",
+                        name: "fk_group_personal_access_rules_groups_group_id",
                         column: x => x.group_id,
                         principalTable: "groups",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_group_personal_access_rule_users_user_id",
+                        name: "fk_group_personal_access_rules_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -44,20 +44,21 @@ namespace LightWiki.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_group_personal_access_rule_group_id",
-                table: "group_personal_access_rule",
-                column: "group_id");
+                name: "ix_group_personal_access_rules_group_id_user_id",
+                table: "group_personal_access_rules",
+                columns: new[] { "group_id", "user_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_group_personal_access_rule_user_id",
-                table: "group_personal_access_rule",
+                name: "ix_group_personal_access_rules_user_id",
+                table: "group_personal_access_rules",
                 column: "user_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "group_personal_access_rule");
+                name: "group_personal_access_rules");
 
             migrationBuilder.DropColumn(
                 name: "group_access_rule",

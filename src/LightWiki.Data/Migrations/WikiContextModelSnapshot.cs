@@ -241,15 +241,16 @@ namespace LightWiki.Data.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_group_personal_access_rule");
-
-                    b.HasIndex("GroupId")
-                        .HasDatabaseName("ix_group_personal_access_rule_group_id");
+                        .HasName("pk_group_personal_access_rules");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_group_personal_access_rule_user_id");
+                        .HasDatabaseName("ix_group_personal_access_rules_user_id");
 
-                    b.ToTable("group_personal_access_rule", (string)null);
+                    b.HasIndex("GroupId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_group_personal_access_rules_group_id_user_id");
+
+                    b.ToTable("group_personal_access_rules", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.User", b =>
@@ -390,14 +391,14 @@ namespace LightWiki.Data.Migrations
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_group_personal_access_rule_groups_group_id");
+                        .HasConstraintName("fk_group_personal_access_rules_groups_group_id");
 
                     b.HasOne("LightWiki.Domain.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_group_personal_access_rule_users_user_id");
+                        .HasConstraintName("fk_group_personal_access_rules_users_user_id");
 
                     b.Navigation("Group");
 

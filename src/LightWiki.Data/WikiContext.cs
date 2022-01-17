@@ -27,6 +27,8 @@ public class WikiContext : DbContext
 
     public DbSet<ArticleGroupAccessRule> ArticleGroupAccessRules { get; set; }
 
+    public DbSet<GroupPersonalAccessRule> GroupPersonalAccessRules { get; set; }
+
     public override Task<int> SaveChangesAsync(
         bool acceptAllChangesOnSuccess,
         CancellationToken cancellationToken = default)
@@ -71,5 +73,6 @@ public class WikiContext : DbContext
         modelBuilder.ApplyConfiguration(new ArticlePersonalAccessRuleConfiguration());
         modelBuilder.ApplyConfiguration(new GroupConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new GroupPersonalAccessRuleConfiguration());
     }
 }
