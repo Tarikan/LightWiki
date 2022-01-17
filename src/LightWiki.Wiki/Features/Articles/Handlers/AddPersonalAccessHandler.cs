@@ -27,10 +27,12 @@ public class AddPersonalAccessHandler : IRequestHandler<AddPersonalAccess, OneOf
             r.ArticleId == request.ArticleId,
             cancellationToken);
 
-        access ??= new ArticlePersonalAccessRule();
+        access ??= new ArticlePersonalAccessRule
+        {
+            UserId = request.UserId,
+            ArticleId = request.ArticleId,
+        };
 
-        access.UserId = request.UserId;
-        access.ArticleId = request.ArticleId;
         access.ArticleAccessRule = request.AccessRule;
 
         _wikiContext.ArticlePersonalAccessRules.Update(access);

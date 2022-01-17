@@ -234,6 +234,18 @@ public class Startup
 
         #endregion
 
+        #region GroupAccess
+
+        services.ForScoped<AddGroupPersonalAccessRule, Success>()
+            .WithValidation<AddGroupPersonalAccessRuleValidator>()
+            .AddHandler<AddGroupPersonalAccessRuleHandler>();
+
+        services.ForScoped<RemoveGroupPersonalAccessRule, Success>()
+            .WithValidation<RemoveGroupPersonalAccessRuleValidator>()
+            .AddHandler<RemoveGroupPersonalAccessRuleHandler>();
+
+        #endregion
+
         #region Users
 
         services.ForScoped<GetUser, UserModel>()

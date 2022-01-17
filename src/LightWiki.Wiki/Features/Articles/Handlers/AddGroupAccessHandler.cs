@@ -28,10 +28,12 @@ public class AddGroupAccessHandler : IRequestHandler<AddGroupAccess, OneOf<Succe
                      r.ArticleId == request.ArticleId,
                 cancellationToken);
 
-        access ??= new ArticleGroupAccessRule();
+        access ??= new ArticleGroupAccessRule
+        {
+            GroupId = request.GroupId,
+            ArticleId = request.ArticleId,
+        };
 
-        access.GroupId = request.GroupId;
-        access.ArticleId = request.ArticleId;
         access.ArticleAccessRule = request.AccessRule;
 
         _wikiContext.ArticleGroupAccessRules.Update(access);
