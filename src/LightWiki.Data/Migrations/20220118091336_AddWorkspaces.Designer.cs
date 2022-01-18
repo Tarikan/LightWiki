@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightWiki.Data.Migrations
 {
     [DbContext(typeof(WikiContext))]
-    [Migration("20220118085942_AddWorkspaces")]
+    [Migration("20220118091336_AddWorkspaces")]
     partial class AddWorkspaces
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -328,6 +328,10 @@ namespace LightWiki.Data.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_workspaces");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_workspaces_name");
 
                     b.ToTable("workspaces", (string)null);
                 });

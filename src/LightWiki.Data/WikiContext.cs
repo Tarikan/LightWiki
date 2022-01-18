@@ -80,6 +80,7 @@ public class WikiContext : DbContext
         modelBuilder.ApplyConfiguration(new GroupConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new GroupPersonalAccessRuleConfiguration());
+        modelBuilder.ApplyConfiguration(new WorkspaceConfiguration());
         modelBuilder.ApplyConfiguration(new WorkspaceGroupAccessRuleConfiguration());
         modelBuilder.ApplyConfiguration(new WorkspacePersonalAccessRuleConfiguration());
     }

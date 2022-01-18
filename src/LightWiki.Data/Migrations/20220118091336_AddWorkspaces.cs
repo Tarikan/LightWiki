@@ -114,6 +114,12 @@ namespace LightWiki.Data.Migrations
                 table: "workspace_personal_access_rules",
                 column: "workspace_id");
 
+            migrationBuilder.CreateIndex(
+                name: "ix_workspaces_name",
+                table: "workspaces",
+                column: "name",
+                unique: true);
+
             migrationBuilder.AddForeignKey(
                 name: "fk_articles_workspaces_workspace_id",
                 table: "articles",

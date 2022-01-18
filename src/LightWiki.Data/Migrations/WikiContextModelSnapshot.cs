@@ -327,6 +327,10 @@ namespace LightWiki.Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_workspaces");
 
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_workspaces_name");
+
                     b.ToTable("workspaces", (string)null);
                 });
 
