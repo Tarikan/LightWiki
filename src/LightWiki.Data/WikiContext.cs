@@ -29,6 +29,12 @@ public class WikiContext : DbContext
 
     public DbSet<GroupPersonalAccessRule> GroupPersonalAccessRules { get; set; }
 
+    public DbSet<Workspace> Workspaces { get; set; }
+
+    public DbSet<WorkspacePersonalAccessRule> WorkspacePersonalAccessRules { get; set; }
+
+    public DbSet<WorkspaceGroupAccessRule> WorkspaceGroupAccessRules { get; set; }
+
     public override Task<int> SaveChangesAsync(
         bool acceptAllChangesOnSuccess,
         CancellationToken cancellationToken = default)
@@ -74,5 +80,7 @@ public class WikiContext : DbContext
         modelBuilder.ApplyConfiguration(new GroupConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new GroupPersonalAccessRuleConfiguration());
+        modelBuilder.ApplyConfiguration(new WorkspaceGroupAccessRuleConfiguration());
+        modelBuilder.ApplyConfiguration(new WorkspacePersonalAccessRuleConfiguration());
     }
 }

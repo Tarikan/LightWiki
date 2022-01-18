@@ -17,6 +17,10 @@ namespace LightWiki.Domain.Models
 
         public int UserId { get; set; }
 
+        public int WorkspaceId { get; set; }
+
+        public Workspace Workspace { get; set; }
+
         public DateTime UpdatedAt { get; set; }
 
         public DateTime CreatedAt { get; set; }

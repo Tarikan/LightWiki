@@ -70,6 +70,10 @@ namespace LightWiki.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
 
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("workspace_id");
+
                     b.HasKey("Id")
                         .HasName("pk_articles");
 
@@ -79,6 +83,9 @@ namespace LightWiki.Data.Migrations
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_articles_user_id");
+
+                    b.HasIndex("WorkspaceId")
+                        .HasDatabaseName("ix_articles_workspace_id");
 
                     b.ToTable("articles", (string)null);
                 });
@@ -292,6 +299,105 @@ namespace LightWiki.Data.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("LightWiki.Domain.Models.Workspace", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("WorkspaceAccessRule")
+                        .HasColumnType("integer")
+                        .HasColumnName("workspace_access_rule");
+
+                    b.HasKey("Id")
+                        .HasName("pk_workspaces");
+
+                    b.ToTable("workspaces", (string)null);
+                });
+
+            modelBuilder.Entity("LightWiki.Domain.Models.WorkspaceGroupAccessRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("integer")
+                        .HasColumnName("group_id");
+
+                    b.Property<int>("WorkspaceAccessRule")
+                        .HasColumnType("integer")
+                        .HasColumnName("workspace_access_rule");
+
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("workspace_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_workspace_group_access_rules");
+
+                    b.HasIndex("WorkspaceId")
+                        .HasDatabaseName("ix_workspace_group_access_rules_workspace_id");
+
+                    b.HasIndex("GroupId", "WorkspaceId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_workspace_group_access_rules_group_id_workspace_id");
+
+                    b.ToTable("workspace_group_access_rules", (string)null);
+                });
+
+            modelBuilder.Entity("LightWiki.Domain.Models.WorkspacePersonalAccessRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("WorkspaceAccessRule")
+                        .HasColumnType("integer")
+                        .HasColumnName("workspace_access_rule");
+
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("workspace_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_workspace_personal_access_rules");
+
+                    b.HasIndex("WorkspaceId")
+                        .HasDatabaseName("ix_workspace_personal_access_rules_workspace_id");
+
+                    b.HasIndex("UserId", "WorkspaceId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_workspace_personal_access_rules_user_id_workspace_id");
+
+                    b.ToTable("workspace_personal_access_rules", (string)null);
+                });
+
             modelBuilder.Entity("GroupUser", b =>
                 {
                     b.HasOne("LightWiki.Domain.Models.Group", null)
@@ -318,7 +424,16 @@ namespace LightWiki.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_articles_users_user_id");
 
+                    b.HasOne("LightWiki.Domain.Models.Workspace", "Workspace")
+                        .WithMany("Articles")
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_articles_workspaces_workspace_id");
+
                     b.Navigation("User");
+
+                    b.Navigation("Workspace");
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.ArticleGroupAccessRule", b =>
@@ -405,6 +520,48 @@ namespace LightWiki.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("LightWiki.Domain.Models.WorkspaceGroupAccessRule", b =>
+                {
+                    b.HasOne("LightWiki.Domain.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workspace_group_access_rules_groups_group_id");
+
+                    b.HasOne("LightWiki.Domain.Models.Workspace", "Workspace")
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workspace_group_access_rules_workspaces_workspace_id");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("LightWiki.Domain.Models.WorkspacePersonalAccessRule", b =>
+                {
+                    b.HasOne("LightWiki.Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workspace_personal_access_rules_users_user_id");
+
+                    b.HasOne("LightWiki.Domain.Models.Workspace", "Workspace")
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_workspace_personal_access_rules_workspaces_workspace_id");
+
+                    b.Navigation("User");
+
+                    b.Navigation("Workspace");
+                });
+
             modelBuilder.Entity("LightWiki.Domain.Models.Article", b =>
                 {
                     b.Navigation("GroupAccessRules");
@@ -424,6 +581,11 @@ namespace LightWiki.Data.Migrations
             modelBuilder.Entity("LightWiki.Domain.Models.User", b =>
                 {
                     b.Navigation("ArticlePersonalAccessRules");
+                });
+
+            modelBuilder.Entity("LightWiki.Domain.Models.Workspace", b =>
+                {
+                    b.Navigation("Articles");
                 });
 #pragma warning restore 612, 618
         }
