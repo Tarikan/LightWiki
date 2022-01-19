@@ -16,6 +16,10 @@ namespace LightWiki.Domain.Models
 
         public List<ArticlePersonalAccessRule> ArticlePersonalAccessRules { get; set; }
 
+        public List<GroupPersonalAccessRule> GroupPersonalAccessRules { get; set; }
+
+        public List<WorkspacePersonalAccessRule> WorkspacePersonalAccessRules { get; set; }
+
         public DateTime UpdatedAt { get; set; }
 
         public DateTime CreatedAt { get; set; }

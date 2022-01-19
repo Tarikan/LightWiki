@@ -16,16 +16,33 @@ public static class ValidationExtensions
         ArticleAccessRule minimalRule,
         bool allowUnauthenticated = false)
     {
-        return ruleBuilder.NotEmpty().SetValidator(new ArticleAccessValidator(dataSet, authorizedUserProvider, minimalRule, allowUnauthenticated));
+        return ruleBuilder.NotEmpty()
+            .SetValidator(
+                new ArticleAccessValidator(dataSet, authorizedUserProvider, minimalRule, allowUnauthenticated));
     }
 
     public static IRuleBuilderOptions<T, int> UserShouldHaveAccessToGroup<T>(
         this IRuleBuilder<T, int> ruleBuilder,
         DbSet<Group> dataSet,
         IAuthorizedUserProvider authorizedUserProvider,
-        GroupAccessRule minimalRule,
+        GroupAccessRule minimalRule)
+    {
+        return ruleBuilder.NotEmpty()
+            .SetValidator(new GroupAccessValidator(dataSet, authorizedUserProvider, minimalRule));
+    }
+
+    public static IRuleBuilderOptions<T, int> UserShouldHaveAccessToWorkspace<T>(
+        this IRuleBuilder<T, int> ruleBuilder,
+        DbSet<Workspace> dataSet,
+        IAuthorizedUserProvider authorizedUserProvider,
+        WorkspaceAccessRule minimalRule,
         bool allowUnauthenticated = false)
     {
-        return ruleBuilder.NotEmpty().SetValidator(new GroupAccessValidator(dataSet, authorizedUserProvider, minimalRule));
+        return ruleBuilder.NotEmpty()
+            .SetValidator(new WorkspaceAccessValidator(
+                dataSet,
+                authorizedUserProvider,
+                minimalRule,
+                allowUnauthenticated));
     }
 }

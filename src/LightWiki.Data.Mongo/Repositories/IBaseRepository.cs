@@ -12,7 +12,7 @@ public interface IBaseRepository<T> where T : BaseModel
 
     Task<T> Create(T entity);
 
-    Task Update(string id, T entityIn);
+    Task<string> Update(string id, T entityIn);
 
     Task Remove(T entityIn);
 

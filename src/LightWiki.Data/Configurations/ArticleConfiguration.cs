@@ -8,7 +8,7 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
 {
     public void Configure(EntityTypeBuilder<Article> builder)
     {
-        builder.HasIndex(a => a.Name)
+        builder.HasIndex(a => new { a.Name, a.WorkspaceId })
             .IsUnique();
     }
 }

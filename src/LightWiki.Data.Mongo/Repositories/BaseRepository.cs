@@ -29,8 +29,12 @@ public abstract class BaseRepository<T> : IBaseRepository<T>
         return entity;
     }
 
-    public async Task Update(string id, T entityIn) =>
-        await Collection.ReplaceOneAsync(entity => entity.Id == id, entityIn);
+    public async Task<string> Update(string id, T entityIn)
+    {
+        var replaceResult = await Collection.ReplaceOneAsync(entity => entity.Id == id, entityIn);
+
+        return replaceResult.UpsertedId.AsString;
+    }
 
     public Task Remove(T entityIn) =>
         Collection.DeleteOneAsync(entity => entity.Id == entityIn.Id);

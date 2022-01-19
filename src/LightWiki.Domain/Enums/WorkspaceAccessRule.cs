@@ -9,10 +9,9 @@ namespace LightWiki.Domain.Enums
         Browse = 1,
         CreateArticle = 1 << 1,
         // will override article access rules
-        ModifyArticle = 1 << 2,
-        AddMember = 1 << 3,
-        RemoveMember = 1 << 4,
-        ManageWorkspace = 1 << 5,
-        All = Browse | CreateArticle | ModifyArticle | AddMember | RemoveMember | ManageWorkspace,
+        ReadArticle = 1 << 2,
+        ModifyArticle = 1 << 3,
+        ManageWorkspace = 1 << 4,
+        All = Browse | CreateArticle | ReadArticle | ModifyArticle | ManageWorkspace,
     }
 }

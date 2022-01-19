@@ -20,6 +20,9 @@ using LightWiki.Features.Users.Handlers;
 using LightWiki.Features.Users.Requests;
 using LightWiki.Features.Users.Responses.Models;
 using LightWiki.Features.Users.Validators;
+using LightWiki.Features.Workspaces.Handlers;
+using LightWiki.Features.Workspaces.Requests;
+using LightWiki.Features.Workspaces.Validators;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.MediatR;
@@ -43,6 +46,18 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Newtonsoft.Json.Serialization;
 using Sieve.Services;
+using AddGroupAccess = LightWiki.Features.Articles.Requests.AddGroupAccess;
+using AddGroupAccessHandler = LightWiki.Features.Articles.Handlers.AddGroupAccessHandler;
+using AddGroupAccessValidator = LightWiki.Features.Articles.Validators.AddGroupAccessValidator;
+using AddPersonalAccess = LightWiki.Features.Articles.Requests.AddPersonalAccess;
+using AddPersonalAccessHandler = LightWiki.Features.Articles.Handlers.AddPersonalAccessHandler;
+using AddPersonalAccessValidator = LightWiki.Features.Articles.Validators.AddPersonalAccessValidator;
+using RemoveGroupAccess = LightWiki.Features.Articles.Requests.RemoveGroupAccess;
+using RemoveGroupAccessHandler = LightWiki.Features.Articles.Handlers.RemoveGroupAccessHandler;
+using RemoveGroupAccessValidator = LightWiki.Features.Articles.Validators.RemoveGroupAccessValidator;
+using RemovePersonalAccess = LightWiki.Features.Articles.Requests.RemovePersonalAccess;
+using RemovePersonalAccessHandler = LightWiki.Features.Articles.Handlers.RemovePersonalAccessHandler;
+using RemovePersonalAccessValidator = LightWiki.Features.Articles.Validators.RemovePersonalAccessValidator;
 
 namespace LightWiki.Wiki.Api;
 
@@ -78,6 +93,7 @@ public class Startup
         var mongoClient = new MongoClient(connectionStrings.MongoConnection);
         services.AddSingleton<IMongoClient>(mongoClient);
         services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
+        services.AddScoped<IWorkspaceTreeRepository, WorkspaceTreeRepository>();
 
         services.AddTransient<IPatchHelper, PatchHelper>();
 
@@ -267,6 +283,42 @@ public class Startup
         services.ForScoped<GetArticleVersionContent, ArticleContentModel>()
             .WithValidation<GetArticleVersionContentValidator>()
             .AddHandler<GetArticleVersionContentHandler>();
+
+        #endregion
+
+        #region Workspaces
+
+        services.ForScoped<CreateWorkspace, SuccessWithId<int>>()
+            .WithValidation<CreateWorkspaceValidator>()
+            .AddHandler<CreateWorkspaceHandler>();
+
+        services.ForScoped<UpdateWorkspace, Success>()
+            .WithValidation<UpdateWorkspaceValidator>()
+            .AddHandler<UpdateWorkspaceHandler>();
+
+        services.ForScoped<RemoveWorkspace, Success>()
+            .WithValidation<RemoveWorkspaceValidator>()
+            .AddHandler<RemoveWorkspaceHandler>();
+
+        #endregion
+
+        #region WorkspaceAccess
+
+        services.ForScoped<LightWiki.Features.Workspaces.Requests.AddPersonalAccess, Success>()
+            .WithValidation<LightWiki.Features.Workspaces.Validators.AddPersonalAccessValidator>()
+            .AddHandler<LightWiki.Features.Workspaces.Handlers.AddPersonalAccessHandler>();
+
+        services.ForScoped<LightWiki.Features.Workspaces.Requests.AddGroupAccess, Success>()
+            .WithValidation<LightWiki.Features.Workspaces.Validators.AddGroupAccessValidator>()
+            .AddHandler<LightWiki.Features.Workspaces.Handlers.AddGroupAccessHandler>();
+
+        services.ForScoped<LightWiki.Features.Workspaces.Requests.RemovePersonalAccess, Success>()
+            .WithValidation<LightWiki.Features.Workspaces.Validators.RemovePersonalAccessValidator>()
+            .AddHandler<LightWiki.Features.Workspaces.Handlers.RemovePersonalAccessHandler>();
+
+        services.ForScoped<LightWiki.Features.Workspaces.Requests.RemoveGroupAccess, Success>()
+            .WithValidation<LightWiki.Features.Workspaces.Validators.RemoveGroupAccessValidator>()
+            .AddHandler<LightWiki.Features.Workspaces.Handlers.RemoveGroupAccessHandler>();
 
         #endregion
     }
