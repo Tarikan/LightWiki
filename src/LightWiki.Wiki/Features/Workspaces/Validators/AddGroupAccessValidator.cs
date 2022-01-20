@@ -3,7 +3,6 @@ using LightWiki.Data;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Infrastructure.Auth;
-using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Validators;
 using LightWiki.Shared.Validation;
@@ -14,8 +13,7 @@ public class AddGroupAccessValidator : AbstractValidator<AddWorkspaceGroupAccess
 {
     public AddGroupAccessValidator(
         WikiContext wikiContext,
-        IAuthorizedUserProvider authorizedUserProvider,
-        AppConfiguration appConfiguration)
+        IAuthorizedUserProvider authorizedUserProvider)
     {
         RuleFor(r => r.WorkspaceId)
             .Cascade(CascadeMode.Stop)
@@ -24,8 +22,7 @@ public class AddGroupAccessValidator : AbstractValidator<AddWorkspaceGroupAccess
             .UserShouldHaveAccessToWorkspace(
                 wikiContext.Workspaces,
                 authorizedUserProvider,
-                WorkspaceAccessRule.ManageWorkspace,
-                appConfiguration.AllowUnauthorizedUse)
+                WorkspaceAccessRule.ManageWorkspace)
             .WithErrorCode(FailCode.Forbidden.ToString());
 
         RuleFor(r => r.GroupId)

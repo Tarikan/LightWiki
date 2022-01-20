@@ -3,7 +3,6 @@ using LightWiki.Data;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.ArticleVersions.Requests;
 using LightWiki.Infrastructure.Auth;
-using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Validators;
 using LightWiki.Shared.Validation;
@@ -14,8 +13,7 @@ public class GetArticleVersionContentValidator : AbstractValidator<GetArticleVer
 {
     public GetArticleVersionContentValidator(
         WikiContext wikiContext,
-        IAuthorizedUserProvider authorizedUserProvider,
-        AppConfiguration appConfiguration)
+        IAuthorizedUserProvider authorizedUserProvider)
     {
         RuleFor(r => r.ArticleVersionId)
             .Cascade(CascadeMode.Stop)
@@ -29,8 +27,7 @@ public class GetArticleVersionContentValidator : AbstractValidator<GetArticleVer
                 var accessValidator = new ArticleAccessValidator(
                     wikiContext.Articles,
                     authorizedUserProvider,
-                    ArticleAccessRule.Read,
-                    appConfiguration.AllowUnauthorizedUse);
+                    ArticleAccessRule.Read);
 
                 var validationResult = await accessValidator.ValidateAsync(articleVersion.ArticleId);
 

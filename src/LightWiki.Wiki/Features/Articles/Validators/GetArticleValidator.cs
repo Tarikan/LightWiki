@@ -14,8 +14,7 @@ public class GetArticleValidator : AbstractValidator<GetArticle>
 {
     public GetArticleValidator(
         WikiContext wikiContext,
-        IAuthorizedUserProvider authorizedUserProvider,
-        AppConfiguration settings)
+        IAuthorizedUserProvider authorizedUserProvider)
     {
         RuleFor(x => x.ArticleId)
             .Cascade(CascadeMode.Stop)
@@ -24,8 +23,7 @@ public class GetArticleValidator : AbstractValidator<GetArticle>
             .UserShouldHaveAccessToArticle(
                 wikiContext.Articles,
                 authorizedUserProvider,
-                ArticleAccessRule.Read,
-                settings.AllowUnauthorizedUse)
+                ArticleAccessRule.Read)
             .WithErrorCode(FailCode.Forbidden.ToString());
     }
 }

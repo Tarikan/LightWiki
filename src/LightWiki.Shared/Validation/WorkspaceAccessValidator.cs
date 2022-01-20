@@ -12,8 +12,7 @@ public class WorkspaceAccessValidator : AbstractValidator<int>
     public WorkspaceAccessValidator(
         DbSet<Workspace> workspaces,
         IAuthorizedUserProvider authorizedUserProvider,
-        WorkspaceAccessRule minimalRule,
-        bool allowUnauthenticated)
+        WorkspaceAccessRule minimalRule)
     {
         RuleFor(r => r)
             .CustomAsync(async (id, ctx, _) =>
@@ -23,12 +22,6 @@ public class WorkspaceAccessValidator : AbstractValidator<int>
 
                 if (userContext is null)
                 {
-                    if (!allowUnauthenticated)
-                    {
-                        ctx.AddFailure("Access denied");
-                        return;
-                    }
-
                     workspace = await workspaces.FindAsync(id);
 
                     if (!workspace.WorkspaceAccessRule.HasFlag(minimalRule))

@@ -3,7 +3,6 @@ using LightWiki.Data;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Infrastructure.Auth;
-using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Validators;
 using LightWiki.Shared.Validation;
@@ -14,8 +13,7 @@ public class GetWorkspaceInfoValidator : AbstractValidator<GetWorkspaceInfo>
 {
     public GetWorkspaceInfoValidator(
         WikiContext wikiContext,
-        IAuthorizedUserProvider authorizedUserProvider,
-        AppConfiguration appConfiguration)
+        IAuthorizedUserProvider authorizedUserProvider)
     {
         RuleFor(r => r.WorkspaceId)
             .Cascade(CascadeMode.Stop)
@@ -23,8 +21,7 @@ public class GetWorkspaceInfoValidator : AbstractValidator<GetWorkspaceInfo>
             .UserShouldHaveAccessToWorkspace(
                 wikiContext.Workspaces,
                 authorizedUserProvider,
-                WorkspaceAccessRule.Browse,
-                appConfiguration.AllowUnauthorizedUse)
+                WorkspaceAccessRule.Browse)
             .WithErrorCode(FailCode.Forbidden.ToString());
     }
 }

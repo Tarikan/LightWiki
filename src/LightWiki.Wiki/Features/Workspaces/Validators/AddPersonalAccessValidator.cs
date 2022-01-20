@@ -20,8 +20,7 @@ public class AddPersonalAccessValidator : AbstractValidator<AddWorkspacePersonal
             .UserShouldHaveAccessToWorkspace(
                 wikiContext.Workspaces,
                 authorizedUserProvider,
-                WorkspaceAccessRule.ManageWorkspace,
-                false)
+                WorkspaceAccessRule.ManageWorkspace)
             .WithErrorCode(FailCode.Forbidden.ToString());
 
         RuleFor(r => r.UserId)

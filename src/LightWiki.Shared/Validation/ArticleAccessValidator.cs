@@ -13,8 +13,7 @@ public class ArticleAccessValidator : AbstractValidator<int>
     public ArticleAccessValidator(
         DbSet<Article> articles,
         IAuthorizedUserProvider authorizedUserProvider,
-        ArticleAccessRule minimalRule,
-        bool allowUnauthenticated)
+        ArticleAccessRule minimalRule)
     {
         RuleFor(c => c)
             .CustomAsync(async (id, ctx, _) =>
@@ -24,12 +23,6 @@ public class ArticleAccessValidator : AbstractValidator<int>
 
                 if (userContext is null)
                 {
-                    if (!allowUnauthenticated)
-                    {
-                        ctx.AddFailure("Access denied");
-                        return;
-                    }
-
                     article = await articles
                         .Include(a => a.Workspace)
                         .SingleAsync(a => a.Id == id);

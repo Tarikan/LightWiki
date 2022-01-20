@@ -13,12 +13,11 @@ public static class ValidationExtensions
         this IRuleBuilder<T, int> ruleBuilder,
         DbSet<Article> dataSet,
         IAuthorizedUserProvider authorizedUserProvider,
-        ArticleAccessRule minimalRule,
-        bool allowUnauthenticated = false)
+        ArticleAccessRule minimalRule)
     {
         return ruleBuilder.NotEmpty()
             .SetValidator(
-                new ArticleAccessValidator(dataSet, authorizedUserProvider, minimalRule, allowUnauthenticated));
+                new ArticleAccessValidator(dataSet, authorizedUserProvider, minimalRule));
     }
 
     public static IRuleBuilderOptions<T, int> UserShouldHaveAccessToGroup<T>(
@@ -35,14 +34,12 @@ public static class ValidationExtensions
         this IRuleBuilder<T, int> ruleBuilder,
         DbSet<Workspace> dataSet,
         IAuthorizedUserProvider authorizedUserProvider,
-        WorkspaceAccessRule minimalRule,
-        bool allowUnauthenticated = false)
+        WorkspaceAccessRule minimalRule)
     {
         return ruleBuilder.NotEmpty()
             .SetValidator(new WorkspaceAccessValidator(
                 dataSet,
                 authorizedUserProvider,
-                minimalRule,
-                allowUnauthenticated));
+                minimalRule));
     }
 }
