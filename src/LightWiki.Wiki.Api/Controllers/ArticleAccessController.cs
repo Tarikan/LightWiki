@@ -3,11 +3,13 @@ using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Web.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LightWiki.Wiki.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("article-access")]
 public class ArticleAccessController : ControllerBase

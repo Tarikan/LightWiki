@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using LightWiki.Features.Users.Requests;
 using LightWiki.Features.Users.Responses.Models;
+using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LightWiki.Wiki.Api.Controllers;
 
+[ConfigurableAuthorize]
 [ApiController]
 [Route("users")]
 public class UsersController : ControllerBase

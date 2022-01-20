@@ -3,6 +3,7 @@ using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Features.ArticleVersions.Requests;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LightWiki.Wiki.Api.Controllers;
 
+[ConfigurableAuthorize]
 [ApiController]
 [Route("article-versions")]
 public class ArticleVersionController : ControllerBase

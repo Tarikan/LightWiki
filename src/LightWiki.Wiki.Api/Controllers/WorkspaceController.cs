@@ -3,8 +3,10 @@ using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Features.Workspaces.Responses.Models;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +23,7 @@ public class WorkspaceController : ControllerBase
         _mediator = mediator;
     }
 
+    [ConfigurableAuthorize]
     [HttpGet]
     [ProducesResponseType(typeof(CollectionResult<WorkspaceModel>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetWorkspaces([FromQuery] GetWorkspaces request)
@@ -32,6 +35,7 @@ public class WorkspaceController : ControllerBase
             fail => fail.ToActionResult());
     }
 
+    [ConfigurableAuthorize]
     [HttpGet("tree")]
     [ProducesResponseType(typeof(CollectionResult<ArticleHeaderModel>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTree([FromQuery] GetWorkspaceTree request)
@@ -43,6 +47,7 @@ public class WorkspaceController : ControllerBase
             fail => fail.ToActionResult());
     }
 
+    [ConfigurableAuthorize]
     [HttpGet("{id:int}/info")]
     [ProducesResponseType(typeof(WorkspaceInfoModel), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetInfo(int id)
@@ -59,6 +64,7 @@ public class WorkspaceController : ControllerBase
             fail => fail.ToActionResult());
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(typeof(SuccessWithId<int>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateWorkspace([FromBody] CreateWorkspace request)

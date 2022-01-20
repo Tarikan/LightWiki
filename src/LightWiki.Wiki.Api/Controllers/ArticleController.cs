@@ -2,6 +2,7 @@
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,6 +22,7 @@ public class ArticleController : ControllerBase
         _mediator = mediator;
     }
 
+    [ConfigurableAuthorize]
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ArticleModel), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetArticle(int id)
@@ -37,6 +39,7 @@ public class ArticleController : ControllerBase
             fail => fail.ToActionResult());
     }
 
+    [ConfigurableAuthorize]
     [HttpGet]
     [ProducesResponseType(typeof(CollectionResult<ArticleModel>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetArticles([FromQuery] GetArticles request)
@@ -48,6 +51,7 @@ public class ArticleController : ControllerBase
             fail => fail.ToActionResult());
     }
 
+    [ConfigurableAuthorize]
     [HttpGet("{id:int}/content")]
     [ProducesResponseType(typeof(ArticleContentModel), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetArticleContent(int id)
@@ -64,6 +68,7 @@ public class ArticleController : ControllerBase
             fail => fail.ToActionResult());
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateArticle([FromBody] CreateArticle request)
@@ -75,6 +80,7 @@ public class ArticleController : ControllerBase
             fail => fail.ToActionResult());
     }
 
+    [Authorize]
     [HttpPost("{id:int}/content")]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateArticleContent(int id, [FromBody] UpdateArticleContent request)
@@ -88,6 +94,7 @@ public class ArticleController : ControllerBase
             fail => fail.ToActionResult());
     }
 
+    [Authorize]
     [HttpPut]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateArticle([FromBody] UpdateArticle request)
