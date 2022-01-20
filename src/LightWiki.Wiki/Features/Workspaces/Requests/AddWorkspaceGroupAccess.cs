@@ -5,7 +5,7 @@ using OneOf;
 
 namespace LightWiki.Features.Workspaces.Requests;
 
-public class AddGroupAccess : IRequest<OneOf<Success, Fail>>
+public class AddWorkspaceGroupAccess : IRequest<OneOf<Success, Fail>>
 {
     public int WorkspaceId { get; set; }
 

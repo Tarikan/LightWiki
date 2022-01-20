@@ -22,6 +22,7 @@ using LightWiki.Features.Users.Responses.Models;
 using LightWiki.Features.Users.Validators;
 using LightWiki.Features.Workspaces.Handlers;
 using LightWiki.Features.Workspaces.Requests;
+using LightWiki.Features.Workspaces.Responses.Models;
 using LightWiki.Features.Workspaces.Validators;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Configuration;
@@ -93,7 +94,6 @@ public class Startup
         var mongoClient = new MongoClient(connectionStrings.MongoConnection);
         services.AddSingleton<IMongoClient>(mongoClient);
         services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
-        services.AddScoped<IWorkspaceTreeRepository, WorkspaceTreeRepository>();
 
         services.AddTransient<IPatchHelper, PatchHelper>();
 
@@ -288,6 +288,13 @@ public class Startup
 
         #region Workspaces
 
+        services.ForScoped<GetWorkspaceTree, CollectionResult<ArticleHeaderModel>>()
+            .WithValidation<GetWorkspaceTreeValidator>()
+            .AddHandler<GetWorkspaceTreeHandler>();
+
+        services.ForScoped<GetWorkspaces, CollectionResult<WorkspaceModel>>()
+            .AddHandler<GetWorkspacesHandler>();
+
         services.ForScoped<CreateWorkspace, SuccessWithId<int>>()
             .WithValidation<CreateWorkspaceValidator>()
             .AddHandler<CreateWorkspaceHandler>();
@@ -300,23 +307,27 @@ public class Startup
             .WithValidation<RemoveWorkspaceValidator>()
             .AddHandler<RemoveWorkspaceHandler>();
 
+        services.ForScoped<GetWorkspaceInfo, WorkspaceInfoModel>()
+            .WithValidation<GetWorkspaceInfoValidator>()
+            .AddHandler<GetWorkspaceInfoHandler>();
+
         #endregion
 
         #region WorkspaceAccess
 
-        services.ForScoped<LightWiki.Features.Workspaces.Requests.AddPersonalAccess, Success>()
+        services.ForScoped<LightWiki.Features.Workspaces.Requests.AddWorkspacePersonalAccess, Success>()
             .WithValidation<LightWiki.Features.Workspaces.Validators.AddPersonalAccessValidator>()
             .AddHandler<LightWiki.Features.Workspaces.Handlers.AddPersonalAccessHandler>();
 
-        services.ForScoped<LightWiki.Features.Workspaces.Requests.AddGroupAccess, Success>()
+        services.ForScoped<LightWiki.Features.Workspaces.Requests.AddWorkspaceGroupAccess, Success>()
             .WithValidation<LightWiki.Features.Workspaces.Validators.AddGroupAccessValidator>()
             .AddHandler<LightWiki.Features.Workspaces.Handlers.AddGroupAccessHandler>();
 
-        services.ForScoped<LightWiki.Features.Workspaces.Requests.RemovePersonalAccess, Success>()
+        services.ForScoped<LightWiki.Features.Workspaces.Requests.RemoveWorkspacePersonalAccess, Success>()
             .WithValidation<LightWiki.Features.Workspaces.Validators.RemovePersonalAccessValidator>()
             .AddHandler<LightWiki.Features.Workspaces.Handlers.RemovePersonalAccessHandler>();
 
-        services.ForScoped<LightWiki.Features.Workspaces.Requests.RemoveGroupAccess, Success>()
+        services.ForScoped<LightWiki.Features.Workspaces.Requests.RemoveWorkspaceGroupAccess, Success>()
             .WithValidation<LightWiki.Features.Workspaces.Validators.RemoveGroupAccessValidator>()
             .AddHandler<LightWiki.Features.Workspaces.Handlers.RemoveGroupAccessHandler>();
 

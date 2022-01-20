@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LightWiki.Features.Workspaces.Validators;
 
-public class RemovePersonalAccessValidator : AbstractValidator<RemovePersonalAccess>
+public class RemovePersonalAccessValidator : AbstractValidator<RemoveWorkspacePersonalAccess>
 {
     public RemovePersonalAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
     {

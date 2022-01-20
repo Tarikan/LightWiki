@@ -11,7 +11,7 @@ using OneOf;
 
 namespace LightWiki.Features.Workspaces.Handlers;
 
-public class AddGroupAccessHandler : IRequestHandler<AddGroupAccess, OneOf<Success, Fail>>
+public class AddGroupAccessHandler : IRequestHandler<AddWorkspaceGroupAccess, OneOf<Success, Fail>>
 {
     private readonly WikiContext _wikiContext;
 
@@ -20,7 +20,7 @@ public class AddGroupAccessHandler : IRequestHandler<AddGroupAccess, OneOf<Succe
         _wikiContext = wikiContext;
     }
 
-    public async Task<OneOf<Success, Fail>> Handle(AddGroupAccess request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, Fail>> Handle(AddWorkspaceGroupAccess request, CancellationToken cancellationToken)
     {
         var workspaceGroupAccessRule = await _wikiContext.WorkspaceGroupAccessRules
             .SingleOrDefaultAsync(

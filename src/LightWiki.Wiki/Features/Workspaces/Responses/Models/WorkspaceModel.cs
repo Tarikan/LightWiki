@@ -1,0 +1,12 @@
+﻿using LightWiki.Domain.Enums;
+
+namespace LightWiki.Features.Workspaces.Responses.Models;
+
+public class WorkspaceModel
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+
+    public WorkspaceAccessRule WorkspaceAccessRule { get; set; }
+}

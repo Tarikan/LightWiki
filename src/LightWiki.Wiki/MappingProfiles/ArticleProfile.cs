@@ -21,7 +21,11 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.CreatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.UpdatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.GroupAccessRules, opts => opts.Ignore())
-            .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore());
+            .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore())
+            .ForMember(dest => dest.Workspace, opts => opts.Ignore())
+            .ForMember(dest => dest.WorkspaceId, opts => opts.Ignore())
+            .ForMember(dest => dest.ParentArticle, opts => opts.Ignore())
+            .ForMember(dest => dest.ParentArticleId, opts => opts.Ignore());
 
         CreateMap<CreateArticle, Article>()
             .ForMember(dest => dest.Id, opts => opts.Ignore())
@@ -31,6 +35,11 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.CreatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.UpdatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.GroupAccessRules, opts => opts.Ignore())
-            .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore());
+            .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore())
+            .ForMember(dest => dest.Workspace, opts => opts.Ignore())
+            .ForMember(dest => dest.ParentArticle, opts => opts.Ignore())
+            .ForMember(dest => dest.ParentArticleId, opts => opts.MapFrom(src => src.ParentId));
+
+        CreateMap<Article, ArticleHeaderModel>();
     }
 }

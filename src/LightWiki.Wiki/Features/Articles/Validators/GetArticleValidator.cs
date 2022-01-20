@@ -1,15 +1,12 @@
-﻿using System.Linq;
-using FluentValidation;
+﻿using FluentValidation;
 using LightWiki.Data;
 using LightWiki.Domain.Enums;
-using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Validators;
 using LightWiki.Shared.Validation;
-using Microsoft.EntityFrameworkCore;
 
 namespace LightWiki.Features.Articles.Validators;
 

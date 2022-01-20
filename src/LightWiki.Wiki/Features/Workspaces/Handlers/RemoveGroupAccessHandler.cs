@@ -9,7 +9,7 @@ using OneOf;
 
 namespace LightWiki.Features.Workspaces.Handlers;
 
-public class RemoveGroupAccessHandler : IRequestHandler<RemoveGroupAccess, OneOf<Success, Fail>>
+public class RemoveGroupAccessHandler : IRequestHandler<RemoveWorkspaceGroupAccess, OneOf<Success, Fail>>
 {
     private readonly WikiContext _wikiContext;
 
@@ -18,7 +18,7 @@ public class RemoveGroupAccessHandler : IRequestHandler<RemoveGroupAccess, OneOf
         _wikiContext = wikiContext;
     }
 
-    public async Task<OneOf<Success, Fail>> Handle(RemoveGroupAccess request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, Fail>> Handle(RemoveWorkspaceGroupAccess request, CancellationToken cancellationToken)
     {
         var access = await _wikiContext.WorkspaceGroupAccessRules
             .SingleAsync(

@@ -10,7 +10,7 @@ using LightWiki.Shared.Validation;
 
 namespace LightWiki.Features.Workspaces.Validators;
 
-public class AddGroupAccessValidator : AbstractValidator<AddGroupAccess>
+public class AddGroupAccessValidator : AbstractValidator<AddWorkspaceGroupAccess>
 {
     public AddGroupAccessValidator(
         WikiContext wikiContext,

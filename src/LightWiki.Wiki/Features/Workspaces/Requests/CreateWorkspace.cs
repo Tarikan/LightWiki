@@ -7,7 +7,7 @@ namespace LightWiki.Features.Workspaces.Requests;
 
 public class CreateWorkspace : IRequest<OneOf<SuccessWithId<int>, Fail>>
 {
-    public string WorkspaceName { get; set; }
+    public string Name { get; set; }
 
     public WorkspaceAccessRule WorkspaceAccessRule { get; set; }
 }

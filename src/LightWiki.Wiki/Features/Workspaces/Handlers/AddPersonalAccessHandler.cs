@@ -10,7 +10,7 @@ using OneOf;
 
 namespace LightWiki.Features.Workspaces.Handlers;
 
-public class AddPersonalAccessHandler : IRequestHandler<AddPersonalAccess, OneOf<Success, Fail>>
+public class AddPersonalAccessHandler : IRequestHandler<AddWorkspacePersonalAccess, OneOf<Success, Fail>>
 {
     private readonly WikiContext _wikiContext;
 
@@ -19,7 +19,7 @@ public class AddPersonalAccessHandler : IRequestHandler<AddPersonalAccess, OneOf
         _wikiContext = wikiContext;
     }
 
-    public async Task<OneOf<Success, Fail>> Handle(AddPersonalAccess request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, Fail>> Handle(AddWorkspacePersonalAccess request, CancellationToken cancellationToken)
     {
         var workspacePersonalAccessRule = await _wikiContext.WorkspacePersonalAccessRules
             .SingleOrDefaultAsync(

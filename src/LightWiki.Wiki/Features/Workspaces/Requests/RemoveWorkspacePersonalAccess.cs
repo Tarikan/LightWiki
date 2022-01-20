@@ -4,9 +4,9 @@ using OneOf;
 
 namespace LightWiki.Features.Workspaces.Requests;
 
-public class RemoveGroupAccess : IRequest<OneOf<Success, Fail>>
+public class RemoveWorkspacePersonalAccess : IRequest<OneOf<Success, Fail>>
 {
     public int WorkspaceId { get; set; }
 
-    public int GroupId { get; set; }
+    public int UserId { get; set; }
 }

@@ -5,8 +5,10 @@ using AutoMapper;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Models;
 using LightWiki.Data.Mongo.Repositories;
+using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Workspaces.Requests;
+using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
 using MediatR;
 using OneOf;
@@ -17,36 +19,37 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
 {
     private readonly WikiContext _wikiContext;
     private readonly IMapper _mapper;
-    private readonly IWorkspaceTreeRepository _workspaceTreeRepository;
+    private readonly IAuthorizedUserProvider _authorizedUserProvider;
 
     public CreateWorkspaceHandler(
         WikiContext wikiContext,
         IMapper mapper,
-        IWorkspaceTreeRepository workspaceTreeRepository)
+        IAuthorizedUserProvider authorizedUserProvider)
     {
         _wikiContext = wikiContext;
         _mapper = mapper;
-        _workspaceTreeRepository = workspaceTreeRepository;
+        _authorizedUserProvider = authorizedUserProvider;
     }
 
     public async Task<OneOf<SuccessWithId<int>, Fail>> Handle(
         CreateWorkspace request,
         CancellationToken cancellationToken)
     {
+        var userContext = await _authorizedUserProvider.GetUser();
         var workspace = _mapper.Map<Workspace>(request);
 
         _wikiContext.Workspaces.Add(workspace);
+
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
-        var workspaceTree = new WorkspaceTree
+        var workspaceRule = new WorkspacePersonalAccessRule
         {
-            WorkspaceName = workspace.Name,
+            UserId = userContext.Id,
             WorkspaceId = workspace.Id,
-            ArticleTree = new List<ArticleTreeNode>(),
+            WorkspaceAccessRule = WorkspaceAccessRule.All,
         };
-
-        await _workspaceTreeRepository.Create(workspaceTree);
-        workspace.ArticleTreeId = workspaceTree.Id;
+        workspace.PersonalAccessRules ??= new List<WorkspacePersonalAccessRule>();
+        workspace.PersonalAccessRules.Add(workspaceRule);
         _wikiContext.Workspaces.Update(workspace);
         await _wikiContext.SaveChangesAsync(cancellationToken);
 

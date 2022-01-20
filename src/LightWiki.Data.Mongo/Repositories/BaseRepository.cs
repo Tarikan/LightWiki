@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using LightWiki.Data.Mongo.Models;
-using LightWiki.Infrastructure.Configuration;
 using MongoDB.Driver;
 
 namespace LightWiki.Data.Mongo.Repositories;
@@ -33,7 +31,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T>
     {
         var replaceResult = await Collection.ReplaceOneAsync(entity => entity.Id == id, entityIn);
 
-        return replaceResult.UpsertedId.AsString;
+        return entityIn.Id;
     }
 
     public Task Remove(T entityIn) =>

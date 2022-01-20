@@ -9,7 +9,7 @@ public class CreateWorkspaceValidator : AbstractValidator<CreateWorkspace>
 {
     public CreateWorkspaceValidator(WikiContext context)
     {
-        RuleFor(r => r.WorkspaceName)
+        RuleFor(r => r.Name)
             .CustomAsync(async (name, ctx, _) =>
             {
                 if (await context.Workspaces.AnyAsync(w => w.Name == name))

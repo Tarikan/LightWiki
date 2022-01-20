@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using FluentValidation;
+﻿using FluentValidation;
 using LightWiki.Data;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
-using LightWiki.Infrastructure.Validators;
 using LightWiki.Shared.Validation;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,17 +29,19 @@ public class CreateArticleValidator : AbstractValidator<CreateArticle>
                 authorizedUserProvider,
                 WorkspaceAccessRule.CreateArticle);
 
-        RuleFor(r => r)
-            .CustomAsync(async (request, ctx, _) =>
+        RuleFor(r => r.ParentId)
+            .CustomAsync(async (parentId, ctx, _) =>
             {
-                var res = await wikiContext.Articles
-                    .Where(a => request.ParentIds.Contains(a.Id) &&
-                                a.WorkspaceId == request.WorkspaceId)
-                    .CountAsync();
-
-                if (request.ParentIds.Count != res)
+                if (parentId is null)
                 {
-                    ctx.AddFailure("Some articles from parents not found");
+                    return;
+                }
+
+                var article = await wikiContext.Articles.FindAsync(parentId.Value);
+
+                if (article is null)
+                {
+                    ctx.AddFailure($"article with id {parentId} not found");
                 }
             });
     }

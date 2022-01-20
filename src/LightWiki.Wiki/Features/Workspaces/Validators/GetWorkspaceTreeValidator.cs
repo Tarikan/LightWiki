@@ -3,15 +3,19 @@ using LightWiki.Data;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Infrastructure.Auth;
+using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Validators;
 using LightWiki.Shared.Validation;
 
 namespace LightWiki.Features.Workspaces.Validators;
 
-public class AddPersonalAccessValidator : AbstractValidator<AddWorkspacePersonalAccess>
+public class GetWorkspaceTreeValidator : AbstractValidator<GetWorkspaceTree>
 {
-    public AddPersonalAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
+    public GetWorkspaceTreeValidator(
+        WikiContext wikiContext,
+        IAuthorizedUserProvider authorizedUserProvider,
+        AppConfiguration appConfiguration)
     {
         RuleFor(r => r.WorkspaceId)
             .Cascade(CascadeMode.Stop)
@@ -20,12 +24,8 @@ public class AddPersonalAccessValidator : AbstractValidator<AddWorkspacePersonal
             .UserShouldHaveAccessToWorkspace(
                 wikiContext.Workspaces,
                 authorizedUserProvider,
-                WorkspaceAccessRule.ManageWorkspace,
-                false)
+                WorkspaceAccessRule.Browse,
+                appConfiguration.AllowUnauthorizedUse)
             .WithErrorCode(FailCode.Forbidden.ToString());
-
-        RuleFor(r => r.UserId)
-            .EntityShouldExist(wikiContext.Users)
-            .WithErrorCode(FailCode.BadRequest.ToString());
     }
 }

@@ -6,7 +6,7 @@
         {
             var result = ArticleAccessRule.None;
 
-            if (workspaceAccessRule.HasFlag(WorkspaceAccessRule.ReadArticle))
+            if (workspaceAccessRule.HasFlag(WorkspaceAccessRule.Browse))
             {
                 result = result | ArticleAccessRule.Read;
             }
