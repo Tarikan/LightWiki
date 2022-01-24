@@ -100,8 +100,8 @@ public class Startup
         services.AddControllers()
             .AddNewtonsoftJson(options =>
             {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
 
         services.AddSwaggerGen(c =>
