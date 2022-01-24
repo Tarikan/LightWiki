@@ -75,4 +75,33 @@ public class WorkspaceController : ControllerBase
             Ok,
             fail => fail.ToActionResult());
     }
+
+    [Authorize]
+    [HttpPut]
+    [ProducesResponseType(typeof(Success), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateWorkspace([FromBody] UpdateWorkspace request)
+    {
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
+
+    [Authorize]
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteWorkspace(int id)
+    {
+        var request = new RemoveWorkspace
+        {
+            WorkspaceId = id,
+        };
+
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
 }
