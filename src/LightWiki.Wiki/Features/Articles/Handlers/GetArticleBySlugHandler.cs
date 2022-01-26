@@ -18,32 +18,34 @@ using OneOf;
 
 namespace LightWiki.Features.Articles.Handlers;
 
-public sealed class GetArticleHandler : IRequestHandler<GetArticle, OneOf<ArticleModel, Fail>>
+public class GetArticleBySlugHandler : IRequestHandler<GetArticleBySlug, OneOf<ArticleModel, Fail>>
 {
     private readonly WikiContext _wikiContext;
-    private readonly IMapper _mapper;
     private readonly IAuthorizedUserProvider _authorizedUserProvider;
     private readonly IArticleHierarchyNodeRepository _articleHierarchyNodeRepository;
+    private readonly IMapper _mapper;
 
-    public GetArticleHandler(
+    public GetArticleBySlugHandler(
         WikiContext wikiContext,
-        IMapper mapper,
         IAuthorizedUserProvider authorizedUserProvider,
-        IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
+        IArticleHierarchyNodeRepository articleHierarchyNodeRepository,
+        IMapper mapper)
     {
         _wikiContext = wikiContext;
-        _mapper = mapper;
         _authorizedUserProvider = authorizedUserProvider;
         _articleHierarchyNodeRepository = articleHierarchyNodeRepository;
+        _mapper = mapper;
     }
 
-    public async Task<OneOf<ArticleModel, Fail>> Handle(
-        GetArticle request,
-        CancellationToken cancellationToken)
+    public async Task<OneOf<ArticleModel, Fail>> Handle(GetArticleBySlug request, CancellationToken cancellationToken)
     {
-        var userContext = _authorizedUserProvider.GetUserOrDefault();
-        var idsToSelect = await _articleHierarchyNodeRepository.GetAncestors(request.ArticleId);
-        idsToSelect.Add(request.ArticleId);
+        var userContext = await _authorizedUserProvider.GetUserOrDefault();
+        var article = await _wikiContext.Articles.SingleAsync(
+            a => a.Slug == request.ArticleNameSlug && a.Workspace.Slug == request.WorkspaceNameSlug,
+            cancellationToken);
+
+        var idsToSelect = await _articleHierarchyNodeRepository.GetAncestors(article.Id);
+        idsToSelect.Add(article.Id);
         List<Article> articles;
         ArticleAccessRule rule;
 
@@ -58,13 +60,12 @@ public sealed class GetArticleHandler : IRequestHandler<GetArticle, OneOf<Articl
         else
         {
             articles = await _wikiContext.Articles
-                .Include(a => a.PersonalAccessRules
-                    .Where(par => par.UserId == userContext.Id))
                 .Include(a => a.GroupAccessRules
                     .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
+                .Include(a => a.PersonalAccessRules
+                    .Where(par => par.UserId == userContext.Id))
                 .Where(a => idsToSelect.Contains(a.Id))
                 .ToListAsync(cancellationToken);
-
             rule = articles.Select(a => a.GetHighestPriorityRule())
                 .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
         }
@@ -74,7 +75,7 @@ public sealed class GetArticleHandler : IRequestHandler<GetArticle, OneOf<Articl
             return new Fail("AccessDenied", FailCode.Forbidden);
         }
 
-        var model = _mapper.Map<ArticleModel>(articles.Single(a => a.Id == request.ArticleId));
+        var model = _mapper.Map<ArticleModel>(article);
 
         return model;
     }

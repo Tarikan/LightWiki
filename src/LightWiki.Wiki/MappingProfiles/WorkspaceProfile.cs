@@ -15,6 +15,7 @@ public class WorkspaceProfile : Profile
             .ForMember(dest => dest.CreatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.CreatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.UpdatedAt, opts => opts.Ignore())
+            .ForMember(dest => dest.Slug, opts => opts.Ignore())
             .ForMember(dest => dest.GroupAccessRules, opts => opts.Ignore())
             .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore());
 

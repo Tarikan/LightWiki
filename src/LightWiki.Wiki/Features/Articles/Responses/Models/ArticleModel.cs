@@ -12,6 +12,8 @@ public class ArticleModel
 
     public string Name { get; set; }
 
+    public string Slug { get; set; }
+
     public int UserId { get; set; }
 
     public DateTime UpdatedAt { get; set; }

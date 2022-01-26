@@ -12,6 +12,7 @@ using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
 using MediatR;
 using OneOf;
+using Slugify;
 
 namespace LightWiki.Features.Workspaces.Handlers;
 
@@ -20,15 +21,18 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
     private readonly WikiContext _wikiContext;
     private readonly IMapper _mapper;
     private readonly IAuthorizedUserProvider _authorizedUserProvider;
+    private readonly ISlugHelper _slugHelper;
 
     public CreateWorkspaceHandler(
         WikiContext wikiContext,
         IMapper mapper,
-        IAuthorizedUserProvider authorizedUserProvider)
+        IAuthorizedUserProvider authorizedUserProvider,
+        ISlugHelper slugHelper)
     {
         _wikiContext = wikiContext;
         _mapper = mapper;
         _authorizedUserProvider = authorizedUserProvider;
+        _slugHelper = slugHelper;
     }
 
     public async Task<OneOf<SuccessWithId<int>, Fail>> Handle(
@@ -37,6 +41,7 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
     {
         var userContext = await _authorizedUserProvider.GetUser();
         var workspace = _mapper.Map<Workspace>(request);
+        workspace.Slug = _slugHelper.GenerateSlug(request.Name);
 
         _wikiContext.Workspaces.Add(workspace);
 

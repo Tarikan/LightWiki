@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LightWiki.Data;
+using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
@@ -14,7 +15,8 @@ public class GetArticleValidator : AbstractValidator<GetArticle>
 {
     public GetArticleValidator(
         WikiContext wikiContext,
-        IAuthorizedUserProvider authorizedUserProvider)
+        IAuthorizedUserProvider authorizedUserProvider,
+        IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
     {
         RuleFor(x => x.ArticleId)
             .Cascade(CascadeMode.Stop)
@@ -23,6 +25,7 @@ public class GetArticleValidator : AbstractValidator<GetArticle>
             .UserShouldHaveAccessToArticle(
                 wikiContext.Articles,
                 authorizedUserProvider,
+                articleHierarchyNodeRepository,
                 ArticleAccessRule.Read)
             .WithErrorCode(FailCode.Forbidden.ToString());
     }

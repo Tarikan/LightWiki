@@ -11,6 +11,8 @@ namespace LightWiki.Domain.Models
 
         public string Name { get; set; }
 
+        public string Slug { get; set; }
+
         public List<ArticleVersion> Versions { get; set; }
 
         public User User { get; set; }

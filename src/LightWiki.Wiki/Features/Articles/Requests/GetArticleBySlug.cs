@@ -5,7 +5,9 @@ using OneOf;
 
 namespace LightWiki.Features.Articles.Requests;
 
-public sealed class GetArticle : IRequest<OneOf<ArticleModel, Fail>>
+public class GetArticleBySlug : IRequest<OneOf<ArticleModel, Fail>>
 {
-    public int ArticleId { get; set; }
+    public string WorkspaceNameSlug { get; set; }
+
+    public string ArticleNameSlug { get; set; }
 }

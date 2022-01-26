@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LightWiki.Data;
+using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
@@ -11,13 +12,20 @@ namespace LightWiki.Features.Articles.Validators;
 
 public class AddGroupAccessValidator : AbstractValidator<AddGroupAccess>
 {
-    public AddGroupAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
+    public AddGroupAccessValidator(
+        WikiContext wikiContext,
+        IAuthorizedUserProvider authorizedUserProvider,
+        IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
     {
         RuleFor(r => r.ArticleId)
             .Cascade(CascadeMode.Stop)
             .EntityShouldExist(wikiContext.Articles)
             .WithErrorCode(FailCode.BadRequest.ToString())
-            .UserShouldHaveAccessToArticle(wikiContext.Articles, authorizedUserProvider, ArticleAccessRule.Modify)
+            .UserShouldHaveAccessToArticle(
+                wikiContext.Articles,
+                authorizedUserProvider,
+                articleHierarchyNodeRepository,
+                ArticleAccessRule.Modify)
             .WithErrorCode(FailCode.Forbidden.ToString());
 
         RuleFor(r => r.GroupId).EntityShouldExist(wikiContext.Groups);

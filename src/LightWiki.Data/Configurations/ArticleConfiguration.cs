@@ -10,5 +10,8 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
     {
         builder.HasIndex(a => new { a.Name, a.WorkspaceId })
             .IsUnique();
+
+        builder.HasIndex(a => new { a.Slug, a.WorkspaceId })
+            .IsUnique();
     }
 }

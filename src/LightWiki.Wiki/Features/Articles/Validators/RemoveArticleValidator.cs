@@ -4,29 +4,27 @@ using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
-using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Validators;
 using LightWiki.Shared.Validation;
 
 namespace LightWiki.Features.Articles.Validators;
 
-public class GetArticleContentValidator : AbstractValidator<GetArticleContent>
+public class RemoveArticleValidator : AbstractValidator<RemoveArticle>
 {
-    public GetArticleContentValidator(
+    public RemoveArticleValidator(
         WikiContext wikiContext,
         IAuthorizedUserProvider authorizedUserProvider,
         IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
     {
-        RuleFor(x => x.ArticleId)
+        RuleFor(r => r.ArticleId)
             .Cascade(CascadeMode.Stop)
             .EntityShouldExist(wikiContext.Articles)
-            .WithErrorCode(FailCode.BadRequest.ToString())
             .UserShouldHaveAccessToArticle(
                 wikiContext.Articles,
                 authorizedUserProvider,
                 articleHierarchyNodeRepository,
-                ArticleAccessRule.Read)
+                ArticleAccessRule.Modify)
             .WithErrorCode(FailCode.Forbidden.ToString());
     }
 }

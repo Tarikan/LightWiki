@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LightWiki.Data;
+using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
@@ -11,12 +12,19 @@ namespace LightWiki.Features.Articles.Validators;
 
 public class RemoveGroupAccessValidator : AbstractValidator<RemoveGroupAccess>
 {
-    public RemoveGroupAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
+    public RemoveGroupAccessValidator(
+        WikiContext wikiContext,
+        IAuthorizedUserProvider authorizedUserProvider,
+        IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
     {
         RuleFor(r => r.ArticleId)
             .EntityShouldExist(wikiContext.Articles)
             .WithErrorCode(FailCode.BadRequest.ToString())
-            .UserShouldHaveAccessToArticle(wikiContext.Articles, authorizedUserProvider, ArticleAccessRule.Modify)
+            .UserShouldHaveAccessToArticle(
+                wikiContext.Articles,
+                authorizedUserProvider,
+                articleHierarchyNodeRepository,
+                ArticleAccessRule.Modify)
             .WithErrorCode(FailCode.Forbidden.ToString());
 
         RuleFor(r => r.GroupId)

@@ -10,5 +10,8 @@ public class WorkspaceConfiguration : IEntityTypeConfiguration<Workspace>
     {
         builder.HasIndex(e => e.Name)
             .IsUnique();
+
+        builder.HasIndex(e => e.Slug)
+            .IsUnique();
     }
 }

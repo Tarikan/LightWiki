@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LightWiki.Data;
+using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.ArticleVersions.Requests;
 using LightWiki.Infrastructure.Auth;
@@ -13,7 +14,8 @@ public class GetArticleVersionContentValidator : AbstractValidator<GetArticleVer
 {
     public GetArticleVersionContentValidator(
         WikiContext wikiContext,
-        IAuthorizedUserProvider authorizedUserProvider)
+        IAuthorizedUserProvider authorizedUserProvider,
+        IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
     {
         RuleFor(r => r.ArticleVersionId)
             .Cascade(CascadeMode.Stop)
@@ -27,6 +29,7 @@ public class GetArticleVersionContentValidator : AbstractValidator<GetArticleVer
                 var accessValidator = new ArticleAccessValidator(
                     wikiContext.Articles,
                     authorizedUserProvider,
+                    articleHierarchyNodeRepository,
                     ArticleAccessRule.Read);
 
                 var validationResult = await accessValidator.ValidateAsync(articleVersion.ArticleId);

@@ -43,10 +43,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Newtonsoft.Json.Serialization;
 using Sieve.Services;
+using Slugify;
 using AddGroupAccess = LightWiki.Features.Articles.Requests.AddGroupAccess;
 using AddGroupAccessHandler = LightWiki.Features.Articles.Handlers.AddGroupAccessHandler;
 using AddGroupAccessValidator = LightWiki.Features.Articles.Validators.AddGroupAccessValidator;
@@ -89,11 +91,16 @@ public class Startup
         services.AddTransient<IAuthorizedUserProvider, AuthorizedUserProvider>();
 
         services.AddDbContext<WikiContext>(opts =>
-            opts.UseNpgsql(connectionStrings.DbConnection));
+        {
+            opts.UseNpgsql(connectionStrings.DbConnection);
+            opts.EnableSensitiveDataLogging()
+                .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+        });
 
         var mongoClient = new MongoClient(connectionStrings.MongoConnection);
         services.AddSingleton<IMongoClient>(mongoClient);
         services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
+        services.AddScoped<IArticleHierarchyNodeRepository, ArticleHierarchyNodeRepository>();
 
         services.AddTransient<IPatchHelper, PatchHelper>();
 
@@ -127,6 +134,12 @@ public class Startup
         services.AddHealthChecks();
 
         services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
+
+        var slugConfig = new SlugHelperConfiguration
+        {
+            ForceLowerCase = false,
+        };
+        services.AddSingleton<ISlugHelper>(new SlugHelper(slugConfig));
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }
@@ -207,6 +220,14 @@ public class Startup
         services.ForScoped<AddPersonalAccess, Success>()
             .WithValidation<AddPersonalAccessValidator>()
             .AddHandler<AddPersonalAccessHandler>();
+
+        services.ForScoped<RemoveArticle, Success>()
+            .WithValidation<RemoveArticleValidator>()
+            .AddHandler<RemoveArticleHandler>();
+
+        services.ForScoped<GetArticleBySlug, ArticleModel>()
+            .WithValidation<GetArticleBySlugValidator>()
+            .AddHandler<GetArticleBySlugHandler>();
 
         #endregion
 
@@ -315,19 +336,19 @@ public class Startup
 
         #region WorkspaceAccess
 
-        services.ForScoped<LightWiki.Features.Workspaces.Requests.AddWorkspacePersonalAccess, Success>()
+        services.ForScoped<AddWorkspacePersonalAccess, Success>()
             .WithValidation<LightWiki.Features.Workspaces.Validators.AddPersonalAccessValidator>()
             .AddHandler<LightWiki.Features.Workspaces.Handlers.AddPersonalAccessHandler>();
 
-        services.ForScoped<LightWiki.Features.Workspaces.Requests.AddWorkspaceGroupAccess, Success>()
+        services.ForScoped<AddWorkspaceGroupAccess, Success>()
             .WithValidation<LightWiki.Features.Workspaces.Validators.AddGroupAccessValidator>()
             .AddHandler<LightWiki.Features.Workspaces.Handlers.AddGroupAccessHandler>();
 
-        services.ForScoped<LightWiki.Features.Workspaces.Requests.RemoveWorkspacePersonalAccess, Success>()
+        services.ForScoped<RemoveWorkspacePersonalAccess, Success>()
             .WithValidation<LightWiki.Features.Workspaces.Validators.RemovePersonalAccessValidator>()
             .AddHandler<LightWiki.Features.Workspaces.Handlers.RemovePersonalAccessHandler>();
 
-        services.ForScoped<LightWiki.Features.Workspaces.Requests.RemoveWorkspaceGroupAccess, Success>()
+        services.ForScoped<RemoveWorkspaceGroupAccess, Success>()
             .WithValidation<LightWiki.Features.Workspaces.Validators.RemoveGroupAccessValidator>()
             .AddHandler<LightWiki.Features.Workspaces.Handlers.RemoveGroupAccessHandler>();
 

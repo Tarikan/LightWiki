@@ -17,4 +17,6 @@ public interface IBaseRepository<T> where T : BaseModel
     Task Remove(T entityIn);
 
     Task Remove(string id);
+
+    Task RemoveMany(IEnumerable<string> ids);
 }

@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using System;
+using System.Linq;
+using FluentValidation;
 using LightWiki.Data;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.Articles.Requests;
@@ -15,13 +17,7 @@ public class CreateArticleValidator : AbstractValidator<CreateArticle>
         RuleFor(m => m.Name).Cascade(CascadeMode.Stop)
             .NotEmpty()
             .MaximumLength(64)
-            .CustomAsync(async (name, ctx, _) =>
-            {
-                if (await wikiContext.Articles.AnyAsync(a => a.Name == name))
-                {
-                    ctx.AddFailure("Article with such name already exists");
-                }
-            });
+            .Must(n => n.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)));
 
         RuleFor(r => r.WorkspaceId)
             .UserShouldHaveAccessToWorkspace(
@@ -29,19 +25,30 @@ public class CreateArticleValidator : AbstractValidator<CreateArticle>
                 authorizedUserProvider,
                 WorkspaceAccessRule.CreateArticle);
 
-        RuleFor(r => r.ParentId)
-            .CustomAsync(async (parentId, ctx, _) =>
+        RuleFor(r => r)
+            .CustomAsync(async (request, ctx, _) =>
             {
-                if (parentId is null)
+                if (await wikiContext.Articles.AnyAsync(
+                        a => string.Equals(a.Name.ToUpper(), request.Name.ToUpper()) &&
+                             a.WorkspaceId == request.WorkspaceId))
+                {
+                    ctx.AddFailure("Name", "Article with such name already exists");
+                }
+            });
+
+        RuleFor(r => new { r.ParentId, r.WorkspaceId })
+            .CustomAsync(async (tuple, ctx, _) =>
+            {
+                if (tuple.ParentId is null)
                 {
                     return;
                 }
 
-                var article = await wikiContext.Articles.FindAsync(parentId.Value);
+                var article = await wikiContext.Articles.FindAsync(tuple.ParentId.Value);
 
-                if (article is null)
+                if (article is null || article.WorkspaceId != tuple.WorkspaceId)
                 {
-                    ctx.AddFailure($"article with id {parentId} not found");
+                    ctx.AddFailure($"Article with id {tuple.ParentId} not found");
                 }
             });
     }

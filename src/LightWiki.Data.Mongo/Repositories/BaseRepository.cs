@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LightWiki.Data.Mongo.Models;
 using MongoDB.Driver;
@@ -39,4 +40,11 @@ public abstract class BaseRepository<T> : IBaseRepository<T>
 
     public Task Remove(string id) =>
         Collection.DeleteOneAsync(entity => entity.Id == id);
+
+    public async Task RemoveMany(IEnumerable<string> ids)
+    {
+        var filter = new FilterDefinitionBuilder<T>()
+            .Where(a => ids.Contains(a.Id));
+        await Collection.DeleteManyAsync(filter);
+    }
 }

@@ -23,6 +23,23 @@ public class ArticleController : ControllerBase
     }
 
     [ConfigurableAuthorize]
+    [HttpGet("display/{workspaceSlug}/{articleNameSlug}")]
+    public async Task<IActionResult> SearchBySlag(string workspaceSlug, string articleNameSlug)
+    {
+        var request = new GetArticleBySlug
+        {
+            ArticleNameSlug = articleNameSlug,
+            WorkspaceNameSlug = workspaceSlug,
+        };
+
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
+
+    [ConfigurableAuthorize]
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ArticleModel), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetArticle(int id)
@@ -73,6 +90,7 @@ public class ArticleController : ControllerBase
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateArticle([FromBody] CreateArticle request)
     {
+        request.Name = request.Name.Trim();
         var result = await _mediator.Send(request);
 
         return result.Match(
@@ -99,6 +117,23 @@ public class ArticleController : ControllerBase
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateArticle([FromBody] UpdateArticle request)
     {
+        request.Name = request.Name.Trim();
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
+
+    [Authorize]
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemoveArticle(int id)
+    {
+        var request = new RemoveArticle
+        {
+            ArticleId = id,
+        };
         var result = await _mediator.Send(request);
 
         return result.Match(

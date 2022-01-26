@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
 using LightWiki.Infrastructure.Auth;
@@ -13,11 +14,16 @@ public static class ValidationExtensions
         this IRuleBuilder<T, int> ruleBuilder,
         DbSet<Article> dataSet,
         IAuthorizedUserProvider authorizedUserProvider,
+        IArticleHierarchyNodeRepository articleHierarchyNodeRepository,
         ArticleAccessRule minimalRule)
     {
         return ruleBuilder.NotEmpty()
             .SetValidator(
-                new ArticleAccessValidator(dataSet, authorizedUserProvider, minimalRule));
+                new ArticleAccessValidator(
+                    dataSet,
+                    authorizedUserProvider,
+                    articleHierarchyNodeRepository,
+                    minimalRule));
     }
 
     public static IRuleBuilderOptions<T, int> UserShouldHaveAccessToGroup<T>(

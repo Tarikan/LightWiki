@@ -9,6 +9,7 @@ using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
 using MediatR;
 using OneOf;
+using Slugify;
 
 namespace LightWiki.Features.Groups.Handlers;
 
@@ -16,11 +17,16 @@ public class CreateGroupHandler : IRequestHandler<CreateGroup, OneOf<SuccessWith
 {
     private readonly WikiContext _wikiContext;
     private readonly IAuthorizedUserProvider _authorizedUserProvider;
+    private readonly ISlugHelper _slugHelper;
 
-    public CreateGroupHandler(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
+    public CreateGroupHandler(
+        WikiContext wikiContext,
+        IAuthorizedUserProvider authorizedUserProvider,
+        ISlugHelper slugHelper)
     {
         _wikiContext = wikiContext;
         _authorizedUserProvider = authorizedUserProvider;
+        _slugHelper = slugHelper;
     }
 
     public async Task<OneOf<SuccessWithId<int>, Fail>> Handle(CreateGroup request, CancellationToken cancellationToken)
@@ -31,6 +37,7 @@ public class CreateGroupHandler : IRequestHandler<CreateGroup, OneOf<SuccessWith
         var group = new Group
         {
             Name = request.GroupName,
+            Slug = _slugHelper.GenerateSlug(request.GroupName),
             Users = new List<User>
             {
                 user,

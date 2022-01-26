@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\LightWiki.Data.Mongo\LightWiki.Data.Mongo.csproj" />
         <ProjectReference Include="..\LightWiki.Domain\LightWiki.Domain.csproj" />
         <ProjectReference Include="..\LightWiki.Infrastructure\LightWiki.Infrastructure.csproj" />
         <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">

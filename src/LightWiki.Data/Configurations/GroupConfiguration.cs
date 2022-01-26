@@ -10,5 +10,8 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
     {
         builder.HasIndex(x => x.Name)
             .IsUnique();
+
+        builder.HasIndex(x => x.Slug)
+            .IsUnique();
     }
 }

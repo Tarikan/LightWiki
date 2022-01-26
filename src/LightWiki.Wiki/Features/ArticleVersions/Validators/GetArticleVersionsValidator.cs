@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LightWiki.Data;
+using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Features.ArticleVersions.Requests;
 using LightWiki.Infrastructure.Auth;
@@ -11,13 +12,20 @@ namespace LightWiki.Features.ArticleVersions.Validators;
 
 public class GetArticleVersionsValidator : AbstractValidator<GetArticleVersions>
 {
-    public GetArticleVersionsValidator(WikiContext context, IAuthorizedUserProvider authorizedUserProvider)
+    public GetArticleVersionsValidator(
+        WikiContext context,
+        IAuthorizedUserProvider authorizedUserProvider,
+        IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
     {
         RuleFor(r => r.ArticleId)
             .Cascade(CascadeMode.Stop)
             .EntityShouldExist(context.Articles)
             .WithErrorCode(FailCode.BadRequest.ToString())
-            .UserShouldHaveAccessToArticle(context.Articles, authorizedUserProvider, ArticleAccessRule.Read)
+            .UserShouldHaveAccessToArticle(
+                context.Articles,
+                authorizedUserProvider,
+                articleHierarchyNodeRepository,
+                ArticleAccessRule.Read)
             .WithErrorCode(FailCode.Forbidden.ToString());
     }
 }
