@@ -26,7 +26,8 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.WorkspaceId, opts => opts.Ignore())
             .ForMember(dest => dest.ParentArticle, opts => opts.Ignore())
             .ForMember(dest => dest.ParentArticleId, opts => opts.Ignore())
-            .ForMember(dest => dest.Slug, opts => opts.Ignore());
+            .ForMember(dest => dest.Slug, opts => opts.Ignore())
+            .ForMember(dest => dest.RootedWorkspace, opts => opts.Ignore());
 
         CreateMap<CreateArticle, Article>()
             .ForMember(dest => dest.Id, opts => opts.Ignore())
@@ -40,8 +41,10 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.Workspace, opts => opts.Ignore())
             .ForMember(dest => dest.ParentArticle, opts => opts.Ignore())
             .ForMember(dest => dest.Slug, opts => opts.Ignore())
+            .ForMember(dest => dest.RootedWorkspace, opts => opts.Ignore())
             .ForMember(dest => dest.ParentArticleId, opts => opts.MapFrom(src => src.ParentId));
 
-        CreateMap<Article, ArticleHeaderModel>();
+        CreateMap<Article, ArticleHeaderModel>()
+            .ForMember(dest => dest.HasChildren, opts => opts.Ignore());
     }
 }

@@ -52,6 +52,7 @@ public class GetWorkspacesHandler : IRequestHandler<GetWorkspaces, OneOf<Collect
         else
         {
             workspaceRequest = _wikiContext.Workspaces
+                .Include(w => w.RootArticle)
                 .Include(w => w.PersonalAccessRules
                     .Where(par => par.UserId == userContext.Id))
                 .Include(w => w.GroupAccessRules

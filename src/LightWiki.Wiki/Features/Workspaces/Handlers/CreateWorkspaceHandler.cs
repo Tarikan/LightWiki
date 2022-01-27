@@ -7,6 +7,7 @@ using LightWiki.Data.Mongo.Models;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
+using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
@@ -56,6 +57,27 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
         workspace.PersonalAccessRules ??= new List<WorkspacePersonalAccessRule>();
         workspace.PersonalAccessRules.Add(workspaceRule);
         _wikiContext.Workspaces.Update(workspace);
+        await _wikiContext.SaveChangesAsync(cancellationToken);
+
+        var rootArticle = new Article
+        {
+            Name = workspace.Name,
+            Slug = workspace.Slug,
+            UserId = userContext.Id,
+            WorkspaceId = workspace.Id,
+            GlobalAccessRule = ArticleAccessRule.Read,
+            PersonalAccessRules = new List<ArticlePersonalAccessRule>
+            {
+                new ()
+                {
+                    UserId = userContext.Id,
+                    ArticleAccessRule = ArticleAccessRule.All,
+                },
+            },
+        };
+
+        workspace.RootArticle = rootArticle;
+
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
         return new SuccessWithId<int>(workspace.Id);

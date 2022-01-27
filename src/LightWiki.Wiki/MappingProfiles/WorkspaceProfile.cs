@@ -17,8 +17,11 @@ public class WorkspaceProfile : Profile
             .ForMember(dest => dest.UpdatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.Slug, opts => opts.Ignore())
             .ForMember(dest => dest.GroupAccessRules, opts => opts.Ignore())
-            .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore());
+            .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore())
+            .ForMember(dest => dest.RootArticle, opts => opts.Ignore())
+            .ForMember(dest => dest.RootArticleId, opts => opts.Ignore());
 
-        CreateMap<Workspace, WorkspaceModel>();
+        CreateMap<Workspace, WorkspaceModel>()
+            .ForMember(dest => dest.WorkspaceRootArticleSlug, opts => opts.MapFrom(src => src.RootArticle.Slug));
     }
 }

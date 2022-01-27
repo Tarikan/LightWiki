@@ -36,6 +36,23 @@ public class WorkspaceController : ControllerBase
     }
 
     [ConfigurableAuthorize]
+    [HttpGet("slug/{slug}")]
+    [ProducesResponseType(typeof(WorkspaceModel), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetWorkspaceBySlug(string slug)
+    {
+        var request = new GetWorkspaceBySlug
+        {
+            Slug = slug,
+        };
+
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
+
+    [ConfigurableAuthorize]
     [HttpGet("tree")]
     [ProducesResponseType(typeof(CollectionResult<ArticleHeaderModel>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTree([FromQuery] GetWorkspaceTree request)

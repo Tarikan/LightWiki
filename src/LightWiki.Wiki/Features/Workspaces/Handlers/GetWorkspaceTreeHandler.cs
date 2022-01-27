@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -40,7 +41,9 @@ public class
         var userContext = await _authorizedUserProvider.GetUserOrDefault();
 
         var articlesRequest = _wikiContext.Articles
-            .Where(a => a.ParentArticleId == request.ParentArticleId)
+            .Where(a => a.ParentArticleId == request.ParentArticleId &&
+                        a.Id != a.Workspace.RootArticleId &&
+                        a.WorkspaceId == request.WorkspaceId)
             .AsNoTracking();
 
         if (userContext is null)
@@ -65,7 +68,23 @@ public class
         }
 
         var result = await articlesRequest.ToListAsync(cancellationToken);
+        var ids = result.Select(r => r.Id);
 
-        return _mapper.Map<CollectionResult<ArticleHeaderModel>>(new CollectionResult<Article>(result, result.Count));
+        var hasChildren = await _wikiContext.Articles.Where(a => a.ParentArticleId.HasValue &&
+                                                                 ids.Contains(a.ParentArticleId.Value))
+            .GroupBy(a => a.ParentArticleId)
+            .Where(g => g.Any())
+            .Select(g => g.Key)
+            .ToListAsync(cancellationToken);
+
+        var mapped =
+            _mapper.Map<List<ArticleHeaderModel>>(result);
+
+        foreach (var model in mapped)
+        {
+            model.HasChildren = hasChildren.Contains(model.Id);
+        }
+
+        return new CollectionResult<ArticleHeaderModel>(mapped, mapped.Count);
     }
 }

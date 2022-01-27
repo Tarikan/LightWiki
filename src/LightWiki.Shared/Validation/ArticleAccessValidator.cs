@@ -22,7 +22,7 @@ public class ArticleAccessValidator : AbstractValidator<int>
         RuleFor(c => c)
             .CustomAsync(async (id, ctx, _) =>
             {
-                var userContext = authorizedUserProvider.GetUserOrDefault();
+                var userContext = await authorizedUserProvider.GetUserOrDefault();
                 var idsToSelect = await articleHierarchyNodeRepository.GetAncestors(id);
                 idsToSelect.Add(id);
                 List<Article> articles;

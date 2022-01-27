@@ -13,5 +13,13 @@ public class WorkspaceConfiguration : IEntityTypeConfiguration<Workspace>
 
         builder.HasIndex(e => e.Slug)
             .IsUnique();
+
+        builder.HasMany(e => e.Articles)
+            .WithOne(a => a.Workspace)
+            .HasForeignKey(a => a.WorkspaceId);
+
+        builder.HasOne(e => e.RootArticle)
+            .WithOne(a => a.RootedWorkspace)
+            .HasForeignKey<Workspace>(w => w.RootArticleId);
     }
 }

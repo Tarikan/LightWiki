@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using FluentValidation.AspNetCore;
+using Ganss.XSS;
 using LightWiki.ArticleEngine.Patches;
 using LightWiki.Auth;
 using LightWiki.Data;
@@ -142,6 +143,9 @@ public class Startup
         services.AddSingleton<ISlugHelper>(new SlugHelper(slugConfig));
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        var sanitizer = new HtmlSanitizer();
+        services.AddSingleton<IHtmlSanitizer>(sanitizer);
     }
 
     public void Configure(
@@ -331,6 +335,10 @@ public class Startup
         services.ForScoped<GetWorkspaceInfo, WorkspaceInfoModel>()
             .WithValidation<GetWorkspaceInfoValidator>()
             .AddHandler<GetWorkspaceInfoHandler>();
+
+        services.ForScoped<GetWorkspaceBySlug, WorkspaceModel>()
+            .WithValidation<GetWorkspaceBySlugValidator>()
+            .AddHandler<GetWorkspaceBySlugHandler>();
 
         #endregion
 

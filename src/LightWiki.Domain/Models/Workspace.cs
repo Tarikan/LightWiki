@@ -21,6 +21,10 @@ namespace LightWiki.Domain.Models
 
         public List<WorkspaceGroupAccessRule> GroupAccessRules { get; set; }
 
+        public Article RootArticle { get; set; }
+
+        public int? RootArticleId { get; set; }
+
         public DateTime UpdatedAt { get; set; }
 
         public DateTime CreatedAt { get; set; }

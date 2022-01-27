@@ -39,5 +39,7 @@ namespace LightWiki.Domain.Models
 
         // rules for users, overwrites global and group rules
         public List<ArticlePersonalAccessRule> PersonalAccessRules { get; set; }
+
+        public Workspace RootedWorkspace { get; set; }
     }
 }

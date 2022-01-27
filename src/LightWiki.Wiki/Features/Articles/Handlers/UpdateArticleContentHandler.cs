@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ganss.XSS;
 using LightWiki.ArticleEngine.Patches;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Enums;
@@ -23,17 +24,20 @@ public class UpdateArticleContentHandler : IRequestHandler<UpdateArticleContent,
     private readonly WikiContext _context;
     private readonly IAuthorizedUserProvider _authorizedUserProvider;
     private readonly IArticleHtmlRepository _articleHtmlRepository;
+    private readonly IHtmlSanitizer _htmlSanitizer;
 
     public UpdateArticleContentHandler(
         IPatchHelper patchHelper,
         WikiContext context,
         IAuthorizedUserProvider authorizedUserProvider,
-        IArticleHtmlRepository articleHtmlRepository)
+        IArticleHtmlRepository articleHtmlRepository,
+        IHtmlSanitizer htmlSanitizer)
     {
         _patchHelper = patchHelper;
         _context = context;
         _authorizedUserProvider = authorizedUserProvider;
         _articleHtmlRepository = articleHtmlRepository;
+        _htmlSanitizer = htmlSanitizer;
     }
 
     public async Task<OneOf<Success, Fail>> Handle(UpdateArticleContent request, CancellationToken cancellationToken)
@@ -44,7 +48,9 @@ public class UpdateArticleContentHandler : IRequestHandler<UpdateArticleContent,
 
         var lastHtmlText = lastHtmlArticle == null ? string.Empty : lastHtmlArticle.Text;
 
-        var patchText = _patchHelper.CreatePatch(lastHtmlText, request.Text);
+        var sanitizedText = _htmlSanitizer.Sanitize(request.Text);
+
+        var patchText = _patchHelper.CreatePatch(lastHtmlText, sanitizedText);
         var version = new ArticleVersion
         {
             UserId = userContext.Id,
@@ -62,7 +68,7 @@ public class UpdateArticleContentHandler : IRequestHandler<UpdateArticleContent,
         var newHtml = new ArticleHtml
         {
             ArticleId = request.ArticleId,
-            Text = request.Text,
+            Text = sanitizedText,
             ArticleStoreType = ArticleStoreType.Latest,
             Index = lastHtmlArticle == null ? 0 : lastHtmlArticle.Index + 1,
         };

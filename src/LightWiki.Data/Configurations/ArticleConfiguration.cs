@@ -13,5 +13,12 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
 
         builder.HasIndex(a => new { a.Slug, a.WorkspaceId })
             .IsUnique();
+
+        builder.HasOne(a => a.Workspace)
+            .WithMany(w => w.Articles)
+            .HasForeignKey(a => a.WorkspaceId);
+
+        builder.HasOne(a => a.RootedWorkspace)
+            .WithOne(w => w.RootArticle);
     }
 }

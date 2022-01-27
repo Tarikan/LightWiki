@@ -10,5 +10,7 @@ public class WorkspaceModel
 
     public string Slug { get; set; }
 
+    public string WorkspaceRootArticleSlug { get; set; }
+
     public WorkspaceAccessRule WorkspaceAccessRule { get; set; }
 }
