@@ -91,17 +91,19 @@ public class Startup
         services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IAuthorizedUserProvider, AuthorizedUserProvider>();
 
-        services.AddDbContext<WikiContext>(opts =>
-        {
-            opts.UseNpgsql(connectionStrings.DbConnection);
-            opts.EnableSensitiveDataLogging()
-                .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
-        });
+        services.AddDbContext<WikiContext>(
+            opts =>
+            {
+                opts.UseNpgsql(connectionStrings.DbConnection);
+                opts.EnableSensitiveDataLogging()
+                    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+            }, ServiceLifetime.Transient);
 
         var mongoClient = new MongoClient(connectionStrings.MongoConnection);
         services.AddSingleton<IMongoClient>(mongoClient);
         services.AddScoped<IArticleHtmlRepository, ArticleHtmlRepository>();
         services.AddScoped<IArticleHierarchyNodeRepository, ArticleHierarchyNodeRepository>();
+        services.AddScoped<IArticlePatchRepository, ArticlePatchRepository>();
 
         services.AddTransient<IPatchHelper, PatchHelper>();
 

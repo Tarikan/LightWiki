@@ -25,19 +25,22 @@ public class UpdateArticleContentHandler : IRequestHandler<UpdateArticleContent,
     private readonly IAuthorizedUserProvider _authorizedUserProvider;
     private readonly IArticleHtmlRepository _articleHtmlRepository;
     private readonly IHtmlSanitizer _htmlSanitizer;
+    private readonly IArticlePatchRepository _articlePatchRepository;
 
     public UpdateArticleContentHandler(
         IPatchHelper patchHelper,
         WikiContext context,
         IAuthorizedUserProvider authorizedUserProvider,
         IArticleHtmlRepository articleHtmlRepository,
-        IHtmlSanitizer htmlSanitizer)
+        IHtmlSanitizer htmlSanitizer,
+        IArticlePatchRepository articlePatchRepository)
     {
         _patchHelper = patchHelper;
         _context = context;
         _authorizedUserProvider = authorizedUserProvider;
         _articleHtmlRepository = articleHtmlRepository;
         _htmlSanitizer = htmlSanitizer;
+        _articlePatchRepository = articlePatchRepository;
     }
 
     public async Task<OneOf<Success, Fail>> Handle(UpdateArticleContent request, CancellationToken cancellationToken)
@@ -51,10 +54,15 @@ public class UpdateArticleContentHandler : IRequestHandler<UpdateArticleContent,
         var sanitizedText = _htmlSanitizer.Sanitize(request.Text);
 
         var patchText = _patchHelper.CreatePatch(lastHtmlText, sanitizedText);
+
+        if (patchText == string.Empty)
+        {
+            return new Success();
+        }
+
         var version = new ArticleVersion
         {
             UserId = userContext.Id,
-            Patch = patchText,
             ArticleId = request.ArticleId,
         };
 
@@ -76,6 +84,14 @@ public class UpdateArticleContentHandler : IRequestHandler<UpdateArticleContent,
         await _articleHtmlRepository.Create(newHtml);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        var mongoPatch = new ArticlePatchModel
+        {
+            Patch = patchText,
+            ArticleVersionId = version.Id,
+        };
+
+        await _articlePatchRepository.Create(mongoPatch);
 
         return new Success();
     }

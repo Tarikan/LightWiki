@@ -11,9 +11,9 @@ public class EntityExistenceValidator<TEntity, TProperty> : AbstractValidator<TP
         RuleFor(c => c)
             .CustomAsync(async (id, c, _) =>
             {
-                var user = await dataSet.FindAsync(id);
+                var entity = await dataSet.FindAsync(id);
 
-                if (user == null)
+                if (entity == null)
                 {
                     c.AddFailure($"{typeof(TEntity).Name} can not be found!");
                 }

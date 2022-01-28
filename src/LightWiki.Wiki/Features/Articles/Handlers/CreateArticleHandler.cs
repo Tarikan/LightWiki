@@ -53,7 +53,6 @@ public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<
 
         var version = new ArticleVersion()
         {
-            Patch = string.Empty,
             Article = article,
             UserId = userContext.Id,
         };
