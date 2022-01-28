@@ -7,7 +7,6 @@ using LightWiki.Data.Mongo.Models;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
-using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
@@ -23,17 +22,20 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
     private readonly IMapper _mapper;
     private readonly IAuthorizedUserProvider _authorizedUserProvider;
     private readonly ISlugHelper _slugHelper;
+    private readonly IArticleHierarchyNodeRepository _articleHierarchyNodeRepository;
 
     public CreateWorkspaceHandler(
         WikiContext wikiContext,
         IMapper mapper,
         IAuthorizedUserProvider authorizedUserProvider,
-        ISlugHelper slugHelper)
+        ISlugHelper slugHelper,
+        IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
     {
         _wikiContext = wikiContext;
         _mapper = mapper;
         _authorizedUserProvider = authorizedUserProvider;
         _slugHelper = slugHelper;
+        _articleHierarchyNodeRepository = articleHierarchyNodeRepository;
     }
 
     public async Task<OneOf<SuccessWithId<int>, Fail>> Handle(
@@ -79,6 +81,16 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
         workspace.RootArticle = rootArticle;
 
         await _wikiContext.SaveChangesAsync(cancellationToken);
+
+        var hierarchyNode = new ArticleHierarchyNode
+        {
+            ArticleId = rootArticle.Id,
+            WorkspaceId = rootArticle.WorkspaceId,
+            ParentId = null,
+            AncestorIds = new List<int>(),
+        };
+
+        await _articleHierarchyNodeRepository.Create(hierarchyNode);
 
         return new SuccessWithId<int>(workspace.Id);
     }
