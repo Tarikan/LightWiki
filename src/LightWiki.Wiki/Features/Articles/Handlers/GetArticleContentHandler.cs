@@ -38,15 +38,15 @@ public class GetArticleContentHandler : IRequestHandler<GetArticleContent, OneOf
         GetArticleContent request,
         CancellationToken cancellationToken)
     {
-        var userContext = _authorizedUserProvider.GetUserOrDefault();
+        var userContext = await _authorizedUserProvider.GetUserOrDefault();
 
         var article = await _wikiContext.Articles
-            .Include(a => a.GroupAccessRules
-                .Where(gar => userContext != null &&
-                              gar.Group.Users.Any(u => u.Id == userContext.Id)))
             .Include(a => a.PersonalAccessRules
                 .Where(par => userContext != null &&
                               par.UserId == userContext.Id))
+            .Include(a => a.GroupAccessRules
+                .Where(gar => userContext != null &&
+                              gar.Group.Users.Any(u => u.Id == userContext.Id)))
             .SingleAsync(a => a.Id == request.ArticleId, cancellationToken);
 
         var accessLevel = article.GlobalAccessRule;

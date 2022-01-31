@@ -22,6 +22,7 @@ public class WorkspaceProfile : Profile
             .ForMember(dest => dest.RootArticleId, opts => opts.Ignore());
 
         CreateMap<Workspace, WorkspaceModel>()
+            .ForMember(dest => dest.WorkspaceAccessRuleForCaller, opts => opts.Ignore())
             .ForMember(dest => dest.WorkspaceRootArticleSlug, opts => opts.MapFrom(src => src.RootArticle.Slug));
     }
 }

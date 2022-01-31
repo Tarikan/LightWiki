@@ -11,6 +11,7 @@ using LightWiki.Features.Workspaces.Responses.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Shared.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -73,8 +74,17 @@ public class GetWorkspacesHandler : IRequestHandler<GetWorkspaces, OneOf<Collect
         var count = await workspaceRequest.CountAsync(cancellationToken);
         var results = await _sieveProcessor.Apply(request, workspaceRequest).ToListAsync(cancellationToken);
 
-        var models = _mapper.Map<CollectionResult<WorkspaceModel>>(new CollectionResult<Workspace>(results, count));
+        var accessRules = results
+            .Select(r => new { id = r.Id, rule = r.GetHighestLevelRule() })
+            .ToList();
 
-        return models;
+        var models = _mapper.Map<List<WorkspaceModel>>(results);
+
+        foreach (var model in models)
+        {
+            model.WorkspaceAccessRuleForCaller = accessRules.First(r => r.id == model.Id).rule;
+        }
+
+        return new CollectionResult<WorkspaceModel>(models, count);
     }
 }

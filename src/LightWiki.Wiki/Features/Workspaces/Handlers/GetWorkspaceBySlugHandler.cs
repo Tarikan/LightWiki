@@ -76,6 +76,9 @@ public class GetWorkspaceBySlugHandler : IRequestHandler<GetWorkspaceBySlug, One
             return new Fail("Access denied", FailCode.Forbidden);
         }
 
-        return _mapper.Map<WorkspaceModel>(workspace);
+        var result = _mapper.Map<WorkspaceModel>(workspace);
+        result.WorkspaceAccessRuleForCaller = rule;
+
+        return result;
     }
 }
