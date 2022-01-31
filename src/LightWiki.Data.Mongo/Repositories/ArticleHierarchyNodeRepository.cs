@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LightWiki.Data.Mongo.Models;
 using LightWiki.Infrastructure.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace LightWiki.Data.Mongo.Repositories;
@@ -40,5 +42,21 @@ public class ArticleHierarchyNodeRepository : BaseRepository<ArticleHierarchyNod
         return Collection
             .Find(a => a.ArticleId == articleId)
             .SingleAsync();
+    }
+
+    public async Task<List<ArticleHierarchyNode>> GetTree(int articleId)
+    {
+        var topLevelNode = await Collection.Find(n => n.ArticleId == articleId)
+            .SingleAsync();
+
+        var filter =
+            Builders<ArticleHierarchyNode>.Filter.Where(a => a.WorkspaceId == topLevelNode.WorkspaceId && (
+                a.ParentId == null || topLevelNode.AncestorIds.Contains(a.ParentId.Value)));
+
+        var ancestors = await Collection
+            .Find(filter)
+            .ToListAsync();
+
+        return ancestors;
     }
 }

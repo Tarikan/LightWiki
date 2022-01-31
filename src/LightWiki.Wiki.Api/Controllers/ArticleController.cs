@@ -140,4 +140,20 @@ public class ArticleController : ControllerBase
             Ok,
             fail => fail.ToActionResult());
     }
+
+    [ConfigurableAuthorize]
+    [HttpGet("{id:int}/ancestors")]
+    [ProducesResponseType(typeof(ArticleAncestorsModel), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAncestors(int id)
+    {
+        var request = new GetArticleAncestors
+        {
+            ArticleId = id,
+        };
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
 }

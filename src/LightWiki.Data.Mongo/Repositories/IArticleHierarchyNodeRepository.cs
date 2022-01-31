@@ -13,4 +13,6 @@ public interface IArticleHierarchyNodeRepository : IBaseRepository<ArticleHierar
     Task<List<ArticleHierarchyNode>> GetAllChildren(int articleId);
 
     Task<ArticleHierarchyNode> FindByArticleId(int articleId);
+
+    Task<List<ArticleHierarchyNode>> GetTree(int articleId);
 }

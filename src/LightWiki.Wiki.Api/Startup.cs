@@ -235,6 +235,10 @@ public class Startup
             .WithValidation<GetArticleBySlugValidator>()
             .AddHandler<GetArticleBySlugHandler>();
 
+        services.ForScoped<GetArticleAncestors, ArticleAncestorsModel>()
+            .WithValidation<GetArticleAncestorsValidator>()
+            .AddHandler<GetArticleAncestorsHandler>();
+
         #endregion
 
         #region ArticleAccess
