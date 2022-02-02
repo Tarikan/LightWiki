@@ -27,6 +27,8 @@ namespace LightWiki.Domain.Models
 
         public Article ParentArticle { get; set; }
 
+        public List<Article> ChildArticles { get; set; }
+
         public DateTime UpdatedAt { get; set; }
 
         public DateTime CreatedAt { get; set; }

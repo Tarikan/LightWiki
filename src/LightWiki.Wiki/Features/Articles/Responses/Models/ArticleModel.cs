@@ -20,7 +20,7 @@ public class ArticleModel
 
     public DateTime CreatedAt { get; set; }
 
-    public RequestAccessModel GlobalAccessRule { get; set; }
+    public ArticleAccessRule GlobalAccessRule { get; set; }
 
     public List<ArticleGroupAccessRuleModel> GroupAccessRules { get; set; }
 

@@ -41,7 +41,8 @@ public class
         var userContext = await _authorizedUserProvider.GetUserOrDefault();
 
         var articlesRequest = _wikiContext.Articles
-            .Where(a => a.ParentArticleId == request.ParentArticleId &&
+            .Where(a => (a.ParentArticleId == request.ParentArticleId ||
+                         a.ParentArticle.ParentArticleId == request.ParentArticleId) &&
                         a.Id != a.Workspace.RootArticleId &&
                         a.WorkspaceId == request.WorkspaceId)
             .AsNoTracking();

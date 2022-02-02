@@ -47,7 +47,7 @@ public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<
         var article = _mapper.Map<Article>(request);
         article.Slug = _slugHelper.GenerateSlug(request.Name);
 
-        article.Name = article.Name.ToUrlFriendlyString();
+        article.Name = article.Name;
         article.UserId = userContext.Id;
         article.Versions = new List<ArticleVersion>();
 

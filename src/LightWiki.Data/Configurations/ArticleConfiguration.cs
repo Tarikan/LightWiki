@@ -20,5 +20,9 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
 
         builder.HasOne(a => a.RootedWorkspace)
             .WithOne(w => w.RootArticle);
+
+        builder.HasMany(a => a.ChildArticles)
+            .WithOne(c => c.ParentArticle)
+            .HasForeignKey(c => c.ParentArticleId);
     }
 }

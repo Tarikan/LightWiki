@@ -113,11 +113,13 @@ public class ArticleController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut]
+    [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateArticle([FromBody] UpdateArticle request)
+    public async Task<IActionResult> UpdateArticle(int id, [FromBody] UpdateArticle request)
     {
         request.Name = request.Name.Trim();
+        request.Id = id;
+
         var result = await _mediator.Send(request);
 
         return result.Match(

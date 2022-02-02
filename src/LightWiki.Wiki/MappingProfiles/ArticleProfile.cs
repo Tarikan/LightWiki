@@ -10,9 +10,7 @@ public class ArticleProfile : Profile
 {
     public ArticleProfile()
     {
-        CreateMap<Article, ArticleModel>()
-            .ForMember(dest => dest.GlobalAccessRule, opts => opts.MapFrom(src => new RequestAccessModel(src.GlobalAccessRule)));
-
+        CreateMap<Article, ArticleModel>();
         CreateMap<UpdateArticle, Article>()
             .ForMember(dest => dest.Id, opts => opts.Ignore())
             .ForMember(dest => dest.User, opts => opts.Ignore())
@@ -27,7 +25,8 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.ParentArticle, opts => opts.Ignore())
             .ForMember(dest => dest.ParentArticleId, opts => opts.Ignore())
             .ForMember(dest => dest.Slug, opts => opts.Ignore())
-            .ForMember(dest => dest.RootedWorkspace, opts => opts.Ignore());
+            .ForMember(dest => dest.RootedWorkspace, opts => opts.Ignore())
+            .ForMember(dest => dest.ChildArticles, opts => opts.Ignore());
 
         CreateMap<CreateArticle, Article>()
             .ForMember(dest => dest.Id, opts => opts.Ignore())
@@ -42,6 +41,7 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.ParentArticle, opts => opts.Ignore())
             .ForMember(dest => dest.Slug, opts => opts.Ignore())
             .ForMember(dest => dest.RootedWorkspace, opts => opts.Ignore())
+            .ForMember(dest => dest.ChildArticles, opts => opts.Ignore())
             .ForMember(dest => dest.ParentArticleId, opts => opts.MapFrom(src => src.ParentId));
 
         CreateMap<Article, ArticleHeaderModel>()

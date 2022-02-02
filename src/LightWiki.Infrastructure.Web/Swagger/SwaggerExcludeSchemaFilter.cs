@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Reflection;
-using System.Text.Json.Serialization;
 using LightWiki.Infrastructure.Extensions;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace LightWiki.Infrastructure.Web.Swagger;

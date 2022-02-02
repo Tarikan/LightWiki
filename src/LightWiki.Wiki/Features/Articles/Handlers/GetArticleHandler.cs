@@ -41,40 +41,10 @@ public sealed class GetArticleHandler : IRequestHandler<GetArticle, OneOf<Articl
         GetArticle request,
         CancellationToken cancellationToken)
     {
-        var userContext = _authorizedUserProvider.GetUserOrDefault();
-        var idsToSelect = await _articleHierarchyNodeRepository.GetAncestors(request.ArticleId);
-        idsToSelect.Add(request.ArticleId);
-        List<Article> articles;
-        ArticleAccessRule rule;
+        var article = await _wikiContext.Articles
+            .SingleAsync(a => a.Id == request.ArticleId, cancellationToken);
 
-        if (userContext is null)
-        {
-            articles = await _wikiContext.Articles
-                .Where(a => idsToSelect.Contains(a.Id))
-                .ToListAsync(cancellationToken);
-            rule = articles.Select(a => a.GlobalAccessRule)
-                .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
-        }
-        else
-        {
-            articles = await _wikiContext.Articles
-                .Include(a => a.PersonalAccessRules
-                    .Where(par => par.UserId == userContext.Id))
-                .Include(a => a.GroupAccessRules
-                    .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
-                .Where(a => idsToSelect.Contains(a.Id))
-                .ToListAsync(cancellationToken);
-
-            rule = articles.Select(a => a.GetHighestPriorityRule())
-                .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
-        }
-
-        if (!rule.HasFlag(ArticleAccessRule.Read))
-        {
-            return new Fail("AccessDenied", FailCode.Forbidden);
-        }
-
-        var model = _mapper.Map<ArticleModel>(articles.Single(a => a.Id == request.ArticleId));
+        var model = _mapper.Map<ArticleModel>(article);
 
         return model;
     }

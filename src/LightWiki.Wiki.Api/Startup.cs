@@ -118,6 +118,7 @@ public class Startup
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "LightWiki.Wiki.Api", Version = "v1" });
             c.ConfigureJwt();
+            c.SchemaFilter<SwaggerExcludeSchemaFilter>();
             c.ConfigureCognitoAuth(oauthConfiguration);
         });
 
