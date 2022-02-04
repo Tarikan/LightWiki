@@ -26,7 +26,9 @@ using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Features.Workspaces.Responses.Models;
 using LightWiki.Features.Workspaces.Validators;
 using LightWiki.Infrastructure.Auth;
+using LightWiki.Infrastructure.Aws.S3;
 using LightWiki.Infrastructure.Configuration;
+using LightWiki.Infrastructure.Configuration.Aws;
 using LightWiki.Infrastructure.MediatR;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Web.Authentication;
@@ -83,9 +85,12 @@ public class Startup
         services.AddSingleton(appConfiguration);
         var oauthConfiguration = Configuration.GetSection("OAuth").Get<OAuthConfiguration>();
         services.AddSingleton(oauthConfiguration);
+        var s3Settings = Configuration.GetSection("AWS").GetSection("S3").Get<S3Configuration>();
+        services.AddSingleton(s3Settings);
 
         services.AddMediatR(typeof(Startup));
         AddHandlers(services);
+        AddAwsServices(services);
 
         services.AddJwtAuthentication();
         services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -187,6 +192,11 @@ public class Startup
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+    }
+
+    private static void AddAwsServices(IServiceCollection services)
+    {
+        services.AddAwsS3();
     }
 
     private static void AddHandlers(IServiceCollection services)

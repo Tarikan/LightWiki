@@ -35,6 +35,8 @@ public class WikiContext : DbContext
 
     public DbSet<WorkspaceGroupAccessRule> WorkspaceGroupAccessRules { get; set; }
 
+    public DbSet<Image> Images { get; set; }
+
     public override Task<int> SaveChangesAsync(
         bool acceptAllChangesOnSuccess,
         CancellationToken cancellationToken = default)
@@ -83,5 +85,6 @@ public class WikiContext : DbContext
         modelBuilder.ApplyConfiguration(new WorkspaceConfiguration());
         modelBuilder.ApplyConfiguration(new WorkspaceGroupAccessRuleConfiguration());
         modelBuilder.ApplyConfiguration(new WorkspacePersonalAccessRuleConfiguration());
+        modelBuilder.ApplyConfiguration(new ImageConfiguration());
     }
 }

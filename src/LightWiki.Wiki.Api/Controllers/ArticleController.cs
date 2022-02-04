@@ -23,6 +23,7 @@ public class ArticleController : ControllerBase
     }
 
     [ConfigurableAuthorize]
+    [ProducesResponseType(typeof(ArticleModel), StatusCodes.Status200OK)]
     [HttpGet("display/{workspaceSlug}/{articleNameSlug}")]
     public async Task<IActionResult> SearchBySlag(string workspaceSlug, string articleNameSlug)
     {
