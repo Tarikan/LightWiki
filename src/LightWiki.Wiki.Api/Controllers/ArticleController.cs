@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
+using LightWiki.Shared.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -153,6 +155,28 @@ public class ArticleController : ControllerBase
         {
             ArticleId = id,
         };
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
+
+    [Authorize]
+    [HttpPost("{id:int}/image")]
+    [ProducesResponseType(typeof(ResponsiveImageModel), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UploadImage(int id, IFormFile file)
+    {
+        var stream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(stream);
+        stream.Position = 0;
+        var request = new UploadArticleImage()
+        {
+            Image = stream,
+            ContentType = file.ContentType,
+            ArticleId = id,
+        };
+
         var result = await _mediator.Send(request);
 
         return result.Match(

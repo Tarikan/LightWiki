@@ -34,6 +34,8 @@ using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
 using LightWiki.Infrastructure.Web.Swagger;
+using LightWiki.Shared.Helpers;
+using LightWiki.Shared.Models;
 using LightWiki.Shared.Query;
 using MediatR;
 using MicroElements.Swashbuckle.FluentValidation;
@@ -87,6 +89,8 @@ public class Startup
         services.AddSingleton(oauthConfiguration);
         var s3Settings = Configuration.GetSection("AWS").GetSection("S3").Get<S3Configuration>();
         services.AddSingleton(s3Settings);
+        var imageSizeSettings = Configuration.GetSection("ImageSizes").Get<ImageSizeConfiguration>();
+        services.AddSingleton(imageSizeSettings);
 
         services.AddMediatR(typeof(Startup));
         AddHandlers(services);
@@ -111,6 +115,8 @@ public class Startup
         services.AddScoped<IArticlePatchRepository, ArticlePatchRepository>();
 
         services.AddTransient<IPatchHelper, PatchHelper>();
+        services.AddScoped<IImageHelper, ImageHelper>();
+        services.AddSingleton<IHashHelper, HashHelper>();
 
         services.AddControllers()
             .AddNewtonsoftJson(options =>
@@ -153,6 +159,8 @@ public class Startup
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         var sanitizer = new HtmlSanitizer();
+        sanitizer.UriAttributes.Add("https");
+        sanitizer.AllowedAttributes.Add("img");
         services.AddSingleton<IHtmlSanitizer>(sanitizer);
     }
 
@@ -250,6 +258,10 @@ public class Startup
             .WithValidation<GetArticleAncestorsValidator>()
             .AddHandler<GetArticleAncestorsHandler>();
 
+        services.ForScoped<UploadArticleImage, ResponsiveImageModel>()
+            .WithValidation<UploadArticleImageValidator>()
+            .AddHandler<UploadArticleImageHandler>();
+
         #endregion
 
         #region ArticleAccess
@@ -313,6 +325,10 @@ public class Startup
         services.ForScoped<GetUser, UserModel>()
             .WithValidation<GetUserValidator>()
             .AddHandler<GetUserHandler>();
+
+        services.ForScoped<UploadUserImage, ResponsiveImageModel>()
+            .WithValidation<UploadUserImageValidator>()
+            .AddHandler<UploadUserImageHandler>();
 
         #endregion
 

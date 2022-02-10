@@ -8,6 +8,7 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<User, UserModel>();
+        CreateMap<User, UserModel>()
+            .ForMember(dest => dest.Avatar, opts => opts.Ignore());
     }
 }

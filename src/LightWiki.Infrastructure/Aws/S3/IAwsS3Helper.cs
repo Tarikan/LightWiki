@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LightWiki.Infrastructure.Aws.S3;
@@ -7,13 +8,15 @@ public interface IAwsS3Helper
 {
     Task<string> UploadFileToBucket(Stream fileStream, string fileNameWithPath, string contentType);
 
-    public Task DeleteFile(string fileNameWithPath);
+    Task DeleteFile(string fileNameWithPath);
+
+    Task BatchDelete(IEnumerable<string> fileNames);
 
     Task DeleteFileByUrl(string url);
 
 #pragma warning disable CA1055
-    public string ConstructFileUrl(string fileName);
+    string ConstructFileUrl(string fileName);
 
-    public string DeconstructFileUrl(string url);
+    string DeconstructFileUrl(string url);
 #pragma warning restore CA1055
 }

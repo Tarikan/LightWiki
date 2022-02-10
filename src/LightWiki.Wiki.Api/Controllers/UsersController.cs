@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using LightWiki.Features.Users.Requests;
 using LightWiki.Features.Users.Responses.Models;
 using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
+using LightWiki.Shared.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +30,26 @@ public class UsersController : ControllerBase
         var request = new GetUser
         {
             UserId = id,
+        };
+
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Ok,
+            fail => fail.ToActionResult());
+    }
+
+    [HttpPost("avatar")]
+    [ProducesResponseType(typeof(ResponsiveImageModel), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UploadAvatar(IFormFile file)
+    {
+        var stream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(stream);
+        stream.Position = 0;
+        var request = new UploadUserImage
+        {
+            Image = stream,
+            ContentType = file.ContentType,
         };
 
         var result = await _mediator.Send(request);

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -27,7 +29,6 @@ public class AwsS3Helper : IAwsS3Helper
             Key = fileNameWithPath,
             BucketName = _s3Configuration.BucketName,
             ContentType = contentType,
-            CannedACL = S3CannedACL.PublicRead,
         };
 
         using var transferUtility = new TransferUtility(_s3Client);
@@ -44,7 +45,25 @@ public class AwsS3Helper : IAwsS3Helper
             BucketName = _s3Configuration.BucketName,
             Key = fileNameWithPath,
         };
+
         await _s3Client.DeleteObjectAsync(deleteObjectRequest);
+    }
+
+    public async Task BatchDelete(IEnumerable<string> fileNames)
+    {
+        var keyVersions = fileNames.Select(n => new KeyVersion
+        {
+            Key = n,
+        })
+            .ToList();
+
+        var deleteRequest = new DeleteObjectsRequest
+        {
+            BucketName = _s3Configuration.BucketName,
+            Objects = keyVersions,
+        };
+
+        await _s3Client.DeleteObjectsAsync(deleteRequest);
     }
 
     public async Task DeleteFileByUrl(string url)
