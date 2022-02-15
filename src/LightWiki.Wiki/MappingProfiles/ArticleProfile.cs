@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Requests.Models;
@@ -10,7 +11,11 @@ public class ArticleProfile : Profile
 {
     public ArticleProfile()
     {
-        CreateMap<Article, ArticleModel>();
+        CreateMap<Article, ArticleModel>()
+            .ForMember(
+                dest => dest.LastArticleVersion,
+                opts => opts.MapFrom(src =>
+                    src.Versions.SingleOrDefault(v => v.CreatedAt == src.Versions.Max(av => av.CreatedAt))));
         CreateMap<UpdateArticle, Article>()
             .ForMember(dest => dest.Id, opts => opts.Ignore())
             .ForMember(dest => dest.User, opts => opts.Ignore())
@@ -18,8 +23,7 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.Versions, opts => opts.Ignore())
             .ForMember(dest => dest.CreatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.UpdatedAt, opts => opts.Ignore())
-            .ForMember(dest => dest.GroupAccessRules, opts => opts.Ignore())
-            .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore())
+            .ForMember(dest => dest.ArticleAccesses, opts => opts.Ignore())
             .ForMember(dest => dest.Workspace, opts => opts.Ignore())
             .ForMember(dest => dest.WorkspaceId, opts => opts.Ignore())
             .ForMember(dest => dest.ParentArticle, opts => opts.Ignore())
@@ -35,8 +39,7 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.Versions, opts => opts.Ignore())
             .ForMember(dest => dest.CreatedAt, opts => opts.Ignore())
             .ForMember(dest => dest.UpdatedAt, opts => opts.Ignore())
-            .ForMember(dest => dest.GroupAccessRules, opts => opts.Ignore())
-            .ForMember(dest => dest.PersonalAccessRules, opts => opts.Ignore())
+            .ForMember(dest => dest.ArticleAccesses, opts => opts.Ignore())
             .ForMember(dest => dest.Workspace, opts => opts.Ignore())
             .ForMember(dest => dest.ParentArticle, opts => opts.Ignore())
             .ForMember(dest => dest.Slug, opts => opts.Ignore())

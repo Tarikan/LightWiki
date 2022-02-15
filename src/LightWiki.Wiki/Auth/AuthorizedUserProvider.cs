@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using LightWiki.Data;
 using LightWiki.Infrastructure.Auth;
+using LightWiki.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,14 +12,19 @@ public class AuthorizedUserProvider : IAuthorizedUserProvider
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly WikiContext _wikiContext;
+    private readonly AppConfiguration _appConfiguration;
 
     private UserContext _cachedUserContext;
     private bool _isUserContextSet;
 
-    public AuthorizedUserProvider(IHttpContextAccessor httpContextAccessor, WikiContext wikiContext)
+    public AuthorizedUserProvider(
+        IHttpContextAccessor httpContextAccessor,
+        WikiContext wikiContext,
+        AppConfiguration appConfiguration)
     {
         _httpContextAccessor = httpContextAccessor;
         _wikiContext = wikiContext;
+        _appConfiguration = appConfiguration;
     }
 
     public async Task<UserContext> GetUserOrDefault()
@@ -32,7 +38,7 @@ public class AuthorizedUserProvider : IAuthorizedUserProvider
 
         var userIdClaim = httpContext?.User
             .Claims
-            .FirstOrDefault(c => c.Type == "custom:public_id")
+            .FirstOrDefault(c => c.Type == _appConfiguration.UserIdHeaderName)
             ?.Value;
 
         var canParseId = int.TryParse(userIdClaim, out var userId);
@@ -52,7 +58,10 @@ public class AuthorizedUserProvider : IAuthorizedUserProvider
             return null;
         }
 
-        if (!await _wikiContext.Users.AnyAsync(u => u.Id == userId))
+        var userParty = await _wikiContext.Users.Where(u => u.Id == userId).Select(u => new int?(u.PartyId))
+            .SingleOrDefaultAsync();
+
+        if (!userParty.HasValue)
         {
             throw new UserNotFoundException();
         }
@@ -61,6 +70,7 @@ public class AuthorizedUserProvider : IAuthorizedUserProvider
         {
             Id = userId,
             Email = userEmailClaim,
+            PartyId = userParty.Value,
         };
 
         _cachedUserContext = userContext;

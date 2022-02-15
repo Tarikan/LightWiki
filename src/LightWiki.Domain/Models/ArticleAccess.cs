@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+using LightWiki.Domain.Enums;
 using LightWiki.Domain.Interfaces;
 
 namespace LightWiki.Domain.Models
 {
-    public class User : ITrackable
+    public class ArticleAccess : ITrackable
     {
         public int Id { get; set; }
-
-        public string Email { get; set; }
-
-        public string Name { get; set; }
-
-        public List<Group> Groups { get; set; }
 
         public int PartyId { get; set; }
 
         public Party Party { get; set; }
 
-        public List<GroupPersonalAccessRule> GroupPersonalAccessRules { get; set; }
+        public ArticleAccessRule ArticleAccessRule { get; set; }
+
+        public Article Article { get; set; }
+
+        public int ArticleId { get; set; }
 
         public DateTime UpdatedAt { get; set; }
 

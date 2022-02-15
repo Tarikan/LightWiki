@@ -26,8 +26,7 @@ public class GetWorkspaceInfoHandler : IRequestHandler<GetWorkspaceInfo, OneOf<W
     public async Task<OneOf<WorkspaceInfoModel, Fail>> Handle(GetWorkspaceInfo request, CancellationToken cancellationToken)
     {
         var workspace = await _wikiContext.Workspaces
-            .Include(w => w.GroupAccessRules)
-            .Include(w => w.PersonalAccessRules)
+            .Include(w => w.WorkspaceAccesses)
             .SingleAsync(
                 w => w.Id == request.WorkspaceId,
                 cancellationToken);
@@ -35,8 +34,7 @@ public class GetWorkspaceInfoHandler : IRequestHandler<GetWorkspaceInfo, OneOf<W
         return new WorkspaceInfoModel
         {
             Id = workspace.Id,
-            PersonalRules = _mapper.Map<List<WorkspacePersonalAccessRuleModel>>(workspace.PersonalAccessRules),
-            GroupRules = _mapper.Map<List<WorkspaceGroupAccessRuleModel>>(workspace.GroupAccessRules),
+            WorkspaceAccess = _mapper.Map<List<WorkspaceAccessModel>>(workspace.WorkspaceAccesses),
         };
     }
 }

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using LightWiki.Data;
 using LightWiki.Domain.Enums;
-using LightWiki.Features.Workspaces.Requests;
+using LightWiki.Features.Workspaces.Handlers;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Validators;
@@ -9,9 +9,9 @@ using LightWiki.Shared.Validation;
 
 namespace LightWiki.Features.Workspaces.Validators;
 
-public class AddPersonalAccessValidator : AbstractValidator<AddWorkspacePersonalAccess>
+public class AddWorkspaceAccessValidator : AbstractValidator<AddWorkspaceAccess>
 {
-    public AddPersonalAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
+    public AddWorkspaceAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
     {
         RuleFor(r => r.WorkspaceId)
             .Cascade(CascadeMode.Stop)
@@ -23,8 +23,8 @@ public class AddPersonalAccessValidator : AbstractValidator<AddWorkspacePersonal
                 WorkspaceAccessRule.ManageWorkspace)
             .WithErrorCode(FailCode.Forbidden.ToString());
 
-        RuleFor(r => r.UserId)
-            .EntityShouldExist(wikiContext.Users)
+        RuleFor(r => r.PartyId)
+            .EntityShouldExist(wikiContext.Parties)
             .WithErrorCode(FailCode.BadRequest.ToString());
     }
 }

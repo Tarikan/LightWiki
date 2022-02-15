@@ -3,6 +3,7 @@ using System;
 using LightWiki.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightWiki.Data.Migrations
 {
     [DbContext(typeof(WikiContext))]
-    partial class WikiContextModelSnapshot : ModelSnapshot
+    [Migration("20220215121006_ReplaceAccessSystem")]
+    partial class ReplaceAccessSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

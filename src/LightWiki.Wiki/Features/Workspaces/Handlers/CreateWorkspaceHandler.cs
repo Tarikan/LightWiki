@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -11,6 +12,7 @@ using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 using Slugify;
 
@@ -42,6 +44,10 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
         CreateWorkspace request,
         CancellationToken cancellationToken)
     {
+        var specialGroups = await _wikiContext.Groups
+            .Include(g => g.Party)
+            .Where(g => g.GroupType != GroupType.Regular)
+            .ToListAsync(cancellationToken);
         var userContext = await _authorizedUserProvider.GetUser();
         var workspace = _mapper.Map<Workspace>(request);
         workspace.Slug = _slugHelper.GenerateSlug(request.Name);
@@ -50,14 +56,26 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
 
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
-        var workspaceRule = new WorkspacePersonalAccessRule
+        var rules = new List<WorkspaceAccess>
         {
-            UserId = userContext.Id,
-            WorkspaceId = workspace.Id,
-            WorkspaceAccessRule = WorkspaceAccessRule.All,
+            new WorkspaceAccess
+            {
+                PartyId = specialGroups.Single(g => g.GroupType == GroupType.Admin).PartyId,
+                WorkspaceAccessRule = WorkspaceAccessRule.All,
+            },
+            new WorkspaceAccess
+            {
+                PartyId = specialGroups.Single(g => g.GroupType == GroupType.Default).PartyId,
+                WorkspaceAccessRule = request.WorkspaceAccessRule,
+            },
+            new WorkspaceAccess
+            {
+                PartyId = userContext.PartyId,
+                WorkspaceAccessRule = WorkspaceAccessRule.All,
+            },
         };
-        workspace.PersonalAccessRules ??= new List<WorkspacePersonalAccessRule>();
-        workspace.PersonalAccessRules.Add(workspaceRule);
+
+        workspace.WorkspaceAccesses = rules;
         _wikiContext.Workspaces.Update(workspace);
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
@@ -67,13 +85,17 @@ public class CreateWorkspaceHandler : IRequestHandler<CreateWorkspace, OneOf<Suc
             Slug = workspace.Slug,
             UserId = userContext.Id,
             WorkspaceId = workspace.Id,
-            GlobalAccessRule = ArticleAccessRule.Read,
-            PersonalAccessRules = new List<ArticlePersonalAccessRule>
+            ArticleAccesses = new List<ArticleAccess>
             {
                 new ()
                 {
-                    UserId = userContext.Id,
+                    PartyId = userContext.PartyId,
                     ArticleAccessRule = ArticleAccessRule.All,
+                },
+                new ()
+                {
+                    PartyId = specialGroups.Single(g => g.GroupType == GroupType.Default).PartyId,
+                    ArticleAccessRule = ArticleAccessRule.Read,
                 },
             },
         };

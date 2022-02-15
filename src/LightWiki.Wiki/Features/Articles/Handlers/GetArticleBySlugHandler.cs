@@ -6,6 +6,7 @@ using AutoMapper;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
+using LightWiki.Domain.Extensions;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
@@ -40,7 +41,13 @@ public class GetArticleBySlugHandler : IRequestHandler<GetArticleBySlug, OneOf<A
     public async Task<OneOf<ArticleModel, Fail>> Handle(GetArticleBySlug request, CancellationToken cancellationToken)
     {
         var userContext = await _authorizedUserProvider.GetUserOrDefault();
-        var article = await _wikiContext.Articles.SingleAsync(
+        var article = await _wikiContext.Articles
+            .Include(a => a.Versions
+                .OrderByDescending(v => v.CreatedAt).Take(1))
+            .ThenInclude(av => av.User)
+            .Include(a => a.User)
+            .AsNoTracking()
+            .SingleAsync(
             a => a.Slug == request.ArticleNameSlug && a.Workspace.Slug == request.WorkspaceNameSlug,
             cancellationToken);
 
@@ -52,21 +59,19 @@ public class GetArticleBySlugHandler : IRequestHandler<GetArticleBySlug, OneOf<A
         if (userContext is null)
         {
             articles = await _wikiContext.Articles
+                .IncludeDefaultAccessRules()
                 .Where(a => idsToSelect.Contains(a.Id))
                 .ToListAsync(cancellationToken);
-            rule = articles.Select(a => a.GlobalAccessRule)
+            rule = articles.Select(a => a.ArticleAccesses.GetHighestPriorityRule())
                 .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
         }
         else
         {
             articles = await _wikiContext.Articles
-                .Include(a => a.GroupAccessRules
-                    .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
-                .Include(a => a.PersonalAccessRules
-                    .Where(par => par.UserId == userContext.Id))
+                .IncludeAccessRules(userContext.Id)
                 .Where(a => idsToSelect.Contains(a.Id))
                 .ToListAsync(cancellationToken);
-            rule = articles.Select(a => a.GetHighestPriorityRule())
+            rule = articles.Select(a => a.ArticleAccesses.GetHighestPriorityRule())
                 .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
         }
 

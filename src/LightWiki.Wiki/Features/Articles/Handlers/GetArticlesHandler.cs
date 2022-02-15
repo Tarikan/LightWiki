@@ -4,11 +4,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using LightWiki.Data;
 using LightWiki.Domain.Enums;
+using LightWiki.Domain.Extensions;
+using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Extensions;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Shared.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -39,20 +42,23 @@ public class GetArticlesHandler : IRequestHandler<GetArticles, OneOf<CollectionR
         Handle(GetArticles request, CancellationToken cancellationToken)
     {
         var userContext = _authorizedUserProvider.GetUserOrDefault();
+        IQueryable<Article> query;
 
-        var query =
-            _wikiContext.Articles.Where(a => a.GlobalAccessRule >= ArticleAccessRule.Read ||
-                                             userContext != null &&
-                                             a.GroupAccessRules.Any(gar =>
-                                                 gar.ArticleAccessRule >= ArticleAccessRule.Read &&
-                                                 gar.Group.Users.Any(u => u.Id == userContext.Id)) ||
-                                             userContext != null &&
-                                             a.PersonalAccessRules.Any(par =>
-                                                 par.UserId == userContext.Id &&
-                                                 par.ArticleAccessRule >= ArticleAccessRule.Read))
-                .Include(a => a.GroupAccessRules)
-                .Include(a => a.PersonalAccessRules)
+        if (userContext is null)
+        {
+            query = _wikiContext.Articles
+                .Include(a => a.ArticleAccesses)
+                .WhereDefaultUserHasAccess(ArticleAccessRule.Read)
                 .AsNoTracking();
+        }
+        else
+        {
+            query = _wikiContext.Articles
+                    .WhereUserHasAccess(userContext.Id, ArticleAccessRule.Read)
+                    .Include(a => a.ArticleAccesses)
+                    .AsNoTracking();
+        }
+
         var total = await query.CountAsync(cancellationToken);
 
         var result = await _sieveProcessor.Apply(request, query).ToCollectionResult(total, cancellationToken);

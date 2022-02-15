@@ -3,6 +3,7 @@ using System.Linq;
 using FluentValidation;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
+using LightWiki.Domain.Extensions;
 using LightWiki.Domain.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Shared.Extensions;
@@ -31,27 +32,25 @@ public class ArticleAccessValidator : AbstractValidator<int>
                 if (userContext is null)
                 {
                     articles = await articleSet
+                        .IncludeDefaultAccessRules()
                         .Where(a => idsToSelect.Contains(a.Id))
                         .ToListAsync();
-                    rule = articles.Select(a => a.GlobalAccessRule)
-                        .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
+                    rule = articles.Select(a => a.ArticleAccesses.GetHighestPriorityRule())
+                        .Aggregate(ArticleAccessRule.None, (acc, a) => a | acc);
                 }
                 else
                 {
                     articles = await articleSet
-                        .Include(a => a.PersonalAccessRules
-                            .Where(par => par.UserId == userContext.Id))
-                        .Include(a => a.GroupAccessRules
-                            .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
+                        .IncludeAccessRules(userContext.Id)
                         .Where(a => idsToSelect.Contains(a.Id))
                         .ToListAsync();
 
-                    rule = articles.Select(a => a.GetHighestPriorityRule())
-                        .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
+                    rule = articles.Select(a => a.ArticleAccesses.GetHighestPriorityRule())
+                        .Aggregate(ArticleAccessRule.None, (acc, a) => a | acc);
                 }
 
                 if (!rule.HasFlag(ruleForAncestors) ||
-                    !articles.Single(a => a.Id == id).GetHighestPriorityRule().HasFlag(minimalRule))
+                    !articles.Single(a => a.Id == id).ArticleAccesses.GetHighestPriorityRule().HasFlag(minimalRule))
                 {
                     ctx.AddFailure("Access denied");
                 }

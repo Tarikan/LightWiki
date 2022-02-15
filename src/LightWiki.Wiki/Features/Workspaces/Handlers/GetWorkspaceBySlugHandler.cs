@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightWiki.Data;
 using LightWiki.Domain.Enums;
+using LightWiki.Domain.Extensions;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Features.Workspaces.Responses.Models;
@@ -49,7 +49,7 @@ public class GetWorkspaceBySlugHandler : IRequestHandler<GetWorkspaceBySlug, One
                 return new Fail("Workspace not found", FailCode.NotFound);
             }
 
-            if (!workspace.WorkspaceAccessRule.HasFlag(WorkspaceAccessRule.Browse))
+            if (!workspace.WorkspaceAccesses.GetHighestLevelRule().HasFlag(WorkspaceAccessRule.Browse))
             {
                 return new Fail("Access denied", FailCode.Forbidden);
             }
@@ -58,10 +58,7 @@ public class GetWorkspaceBySlugHandler : IRequestHandler<GetWorkspaceBySlug, One
         {
             workspace = await _wikiContext.Workspaces
                 .Include(w => w.RootArticle)
-                .Include(w => w.GroupAccessRules
-                    .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
-                .Include(w => w.PersonalAccessRules
-                    .Where(par => par.UserId == userContext.Id))
+                .IncludeAccessRules(userContext.Id)
                 .SingleOrDefaultAsync(w => w.Slug == request.Slug, cancellationToken);
         }
 
@@ -70,7 +67,7 @@ public class GetWorkspaceBySlugHandler : IRequestHandler<GetWorkspaceBySlug, One
             return new Fail("Workspace not found", FailCode.NotFound);
         }
 
-        var rule = workspace.GetHighestLevelRule();
+        var rule = workspace.WorkspaceAccesses.GetHighestLevelRule();
         if (!rule.HasFlag(WorkspaceAccessRule.Browse))
         {
             return new Fail("Access denied", FailCode.Forbidden);

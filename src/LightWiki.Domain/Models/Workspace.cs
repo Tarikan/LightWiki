@@ -15,11 +15,7 @@ namespace LightWiki.Domain.Models
 
         public List<Article> Articles { get; set; }
 
-        public WorkspaceAccessRule WorkspaceAccessRule { get; set; }
-
-        public List<WorkspacePersonalAccessRule> PersonalAccessRules { get; set; }
-
-        public List<WorkspaceGroupAccessRule> GroupAccessRules { get; set; }
+        public List<WorkspaceAccess> WorkspaceAccesses { get; set; }
 
         public Article RootArticle { get; set; }
 

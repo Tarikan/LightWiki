@@ -1,17 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
-using LightWiki.Domain.Enums;
-using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
-using LightWiki.Shared.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -41,7 +37,13 @@ public sealed class GetArticleHandler : IRequestHandler<GetArticle, OneOf<Articl
         GetArticle request,
         CancellationToken cancellationToken)
     {
+        var userContext = await _authorizedUserProvider.GetUserOrDefault();
         var article = await _wikiContext.Articles
+            .Include(a => a.Versions
+                .OrderByDescending(v => v.CreatedAt).Take(1))
+            .ThenInclude(av => av.User)
+            .Include(a => a.User)
+            .AsNoTracking()
             .SingleAsync(a => a.Id == request.ArticleId, cancellationToken);
 
         var model = _mapper.Map<ArticleModel>(article);

@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using FluentValidation;
 using LightWiki.Domain.Enums;
+using LightWiki.Domain.Extensions;
 using LightWiki.Domain.Models;
 using LightWiki.Infrastructure.Auth;
+using LightWiki.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace LightWiki.Shared.Validation;
@@ -22,9 +24,11 @@ public class WorkspaceAccessValidator : AbstractValidator<int>
 
                 if (userContext is null)
                 {
-                    workspace = await workspaces.FindAsync(id);
+                    workspace = await workspaces
+                        .IncludeDefaultAccessRules()
+                        .SingleAsync(w => w.Id == id);
 
-                    if (!workspace.WorkspaceAccessRule.HasFlag(minimalRule))
+                    if (!workspace.WorkspaceAccesses.GetHighestLevelRule().HasFlag(minimalRule))
                     {
                         ctx.AddFailure("Access denied");
                     }
@@ -33,35 +37,16 @@ public class WorkspaceAccessValidator : AbstractValidator<int>
                 }
 
                 workspace = await workspaces
-                    .Include(a => a.PersonalAccessRules
-                        .Where(par => par.UserId == userContext.Id))
-                    .Include(a => a.GroupAccessRules
-                        .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
+                    .IncludeAccessRules(userContext.Id)
+                    .WhereUserHasAccess(userContext.Id, WorkspaceAccessRule.Browse)
                     .SingleAsync(a => a.Id == id);
 
-                var rule = GetHighestLevelRule(workspace);
+                var rule = workspace.WorkspaceAccesses.GetHighestLevelRule();
 
                 if (!rule.HasFlag(minimalRule))
                 {
                     ctx.AddFailure("Access denied");
                 }
             });
-    }
-
-    private static WorkspaceAccessRule GetHighestLevelRule(Workspace workspace)
-    {
-        if (workspace.PersonalAccessRules.Any())
-        {
-            return workspace.PersonalAccessRules.First().WorkspaceAccessRule;
-        }
-
-        if (workspace.GroupAccessRules.Any())
-        {
-            workspace.GroupAccessRules
-                .Select(gar => gar.WorkspaceAccessRule)
-                .Aggregate(WorkspaceAccessRule.None, (acc, x) => acc | x);
-        }
-
-        return workspace.WorkspaceAccessRule;
     }
 }

@@ -9,24 +9,24 @@ using OneOf;
 
 namespace LightWiki.Features.Workspaces.Handlers;
 
-public class RemovePersonalAccessHandler : IRequestHandler<RemoveWorkspacePersonalAccess, OneOf<Success, Fail>>
+public class RemoveWorkspaceAccessHandler : IRequestHandler<RemoveWorkspaceAccess, OneOf<Success, Fail>>
 {
     private readonly WikiContext _wikiContext;
 
-    public RemovePersonalAccessHandler(WikiContext wikiContext)
+    public RemoveWorkspaceAccessHandler(WikiContext wikiContext)
     {
         _wikiContext = wikiContext;
     }
 
-    public async Task<OneOf<Success, Fail>> Handle(RemoveWorkspacePersonalAccess request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, Fail>> Handle(RemoveWorkspaceAccess request, CancellationToken cancellationToken)
     {
-        var access = await _wikiContext.WorkspacePersonalAccessRules
+        var access = await _wikiContext.WorkspaceAccesses
             .SingleAsync(
-                a => a.UserId == request.UserId &&
-                     a.WorkspaceId == request.WorkspaceId,
+                a => a.WorkspaceId == request.WorkspaceId &&
+                     a.PartyId == request.PartyId,
                 cancellationToken);
 
-        _wikiContext.WorkspacePersonalAccessRules.Remove(access);
+        _wikiContext.WorkspaceAccesses.Remove(access);
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
         return new Success();

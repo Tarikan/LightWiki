@@ -15,6 +15,12 @@ namespace LightWiki.Domain.Models
 
         public List<User> Users { get; set; }
 
+        public GroupType GroupType { get; set; }
+
+        public Party Party { get; set; }
+
+        public int PartyId { get; set; }
+
         public List<ArticleGroupAccessRule> ArticleGroupAccessRules { get; set; }
 
         public List<GroupPersonalAccessRule> GroupPersonalAccessRules { get; set; }

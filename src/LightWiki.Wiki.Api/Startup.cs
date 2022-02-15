@@ -37,6 +37,7 @@ using LightWiki.Infrastructure.Web.Swagger;
 using LightWiki.Shared.Helpers;
 using LightWiki.Shared.Models;
 using LightWiki.Shared.Query;
+using LightWiki.Wiki.Api.Configuration;
 using MediatR;
 using MicroElements.Swashbuckle.FluentValidation;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
@@ -54,18 +55,6 @@ using MongoDB.Driver;
 using Newtonsoft.Json.Serialization;
 using Sieve.Services;
 using Slugify;
-using AddGroupAccess = LightWiki.Features.Articles.Requests.AddGroupAccess;
-using AddGroupAccessHandler = LightWiki.Features.Articles.Handlers.AddGroupAccessHandler;
-using AddGroupAccessValidator = LightWiki.Features.Articles.Validators.AddGroupAccessValidator;
-using AddPersonalAccess = LightWiki.Features.Articles.Requests.AddPersonalAccess;
-using AddPersonalAccessHandler = LightWiki.Features.Articles.Handlers.AddPersonalAccessHandler;
-using AddPersonalAccessValidator = LightWiki.Features.Articles.Validators.AddPersonalAccessValidator;
-using RemoveGroupAccess = LightWiki.Features.Articles.Requests.RemoveGroupAccess;
-using RemoveGroupAccessHandler = LightWiki.Features.Articles.Handlers.RemoveGroupAccessHandler;
-using RemoveGroupAccessValidator = LightWiki.Features.Articles.Validators.RemoveGroupAccessValidator;
-using RemovePersonalAccess = LightWiki.Features.Articles.Requests.RemovePersonalAccess;
-using RemovePersonalAccessHandler = LightWiki.Features.Articles.Handlers.RemovePersonalAccessHandler;
-using RemovePersonalAccessValidator = LightWiki.Features.Articles.Validators.RemovePersonalAccessValidator;
 
 namespace LightWiki.Wiki.Api;
 
@@ -91,10 +80,14 @@ public class Startup
         services.AddSingleton(s3Settings);
         var imageSizeSettings = Configuration.GetSection("ImageSizes").Get<ImageSizeConfiguration>();
         services.AddSingleton(imageSizeSettings);
+        var firstStartConfiguration = Configuration.GetSection("FirstStartSetup").Get<FirstStartConfiguration>();
+        services.AddSingleton(firstStartConfiguration);
 
         services.AddMediatR(typeof(Startup));
         AddHandlers(services);
         AddAwsServices(services);
+
+        services.AddTransient<IFirstStartConfigurator, FirstStartConfigurator>();
 
         services.AddJwtAuthentication();
         services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -160,7 +153,7 @@ public class Startup
 
         var sanitizer = new HtmlSanitizer();
         sanitizer.UriAttributes.Add("https");
-        sanitizer.AllowedAttributes.Add("img");
+        sanitizer.AllowedAttributes.Add("srcset");
         services.AddSingleton<IHtmlSanitizer>(sanitizer);
     }
 
@@ -169,7 +162,8 @@ public class Startup
         IWebHostEnvironment env,
         IMapper mapper,
         WikiContext context,
-        OAuthConfiguration oauthConfiguration)
+        OAuthConfiguration oauthConfiguration,
+        IFirstStartConfigurator firstStartConfigurator)
     {
         mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
@@ -200,6 +194,8 @@ public class Startup
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+        firstStartConfigurator.Configure();
     }
 
     private static void AddAwsServices(IServiceCollection services)
@@ -238,14 +234,6 @@ public class Startup
             .WithValidation<UpdateArticleContentValidator>()
             .AddHandler<UpdateArticleContentHandler>();
 
-        services.ForScoped<AddGroupAccess, Success>()
-            .WithValidation<AddGroupAccessValidator>()
-            .AddHandler<AddGroupAccessHandler>();
-
-        services.ForScoped<AddPersonalAccess, Success>()
-            .WithValidation<AddPersonalAccessValidator>()
-            .AddHandler<AddPersonalAccessHandler>();
-
         services.ForScoped<RemoveArticle, Success>()
             .WithValidation<RemoveArticleValidator>()
             .AddHandler<RemoveArticleHandler>();
@@ -266,21 +254,13 @@ public class Startup
 
         #region ArticleAccess
 
-        services.ForScoped<AddPersonalAccess, Success>()
-            .WithValidation<AddPersonalAccessValidator>()
-            .AddHandler<AddPersonalAccessHandler>();
+        services.ForScoped<AddArticleAccess, Success>()
+            .WithValidation<AddArticleAccessValidator>()
+            .AddHandler<AddArticleAccessHandler>();
 
-        services.ForScoped<AddGroupAccess, Success>()
-            .WithValidation<AddGroupAccessValidator>()
-            .AddHandler<AddGroupAccessHandler>();
-
-        services.ForScoped<RemovePersonalAccess, Success>()
-            .WithValidation<RemovePersonalAccessValidator>()
-            .AddHandler<RemovePersonalAccessHandler>();
-
-        services.ForScoped<RemoveGroupAccess, Success>()
-            .WithValidation<RemoveGroupAccessValidator>()
-            .AddHandler<RemoveGroupAccessHandler>();
+        services.ForScoped<RemoveArticleAccess, Success>()
+            .WithValidation<RemoveArticleAccessValidator>()
+            .AddHandler<RemoveArticleAccessHandler>();
 
         #endregion
 
@@ -377,21 +357,13 @@ public class Startup
 
         #region WorkspaceAccess
 
-        services.ForScoped<AddWorkspacePersonalAccess, Success>()
-            .WithValidation<LightWiki.Features.Workspaces.Validators.AddPersonalAccessValidator>()
-            .AddHandler<LightWiki.Features.Workspaces.Handlers.AddPersonalAccessHandler>();
+        services.ForScoped<AddWorkspaceAccess, Success>()
+            .WithValidation<AddWorkspaceAccessValidator>()
+            .AddHandler<AddWorkspaceAccessHandler>();
 
-        services.ForScoped<AddWorkspaceGroupAccess, Success>()
-            .WithValidation<LightWiki.Features.Workspaces.Validators.AddGroupAccessValidator>()
-            .AddHandler<LightWiki.Features.Workspaces.Handlers.AddGroupAccessHandler>();
-
-        services.ForScoped<RemoveWorkspacePersonalAccess, Success>()
-            .WithValidation<LightWiki.Features.Workspaces.Validators.RemovePersonalAccessValidator>()
-            .AddHandler<LightWiki.Features.Workspaces.Handlers.RemovePersonalAccessHandler>();
-
-        services.ForScoped<RemoveWorkspaceGroupAccess, Success>()
-            .WithValidation<LightWiki.Features.Workspaces.Validators.RemoveGroupAccessValidator>()
-            .AddHandler<LightWiki.Features.Workspaces.Handlers.RemoveGroupAccessHandler>();
+        services.ForScoped<RemoveWorkspaceAccess, Success>()
+            .WithValidation<RemoveWorkspaceAccessValidator>()
+            .AddHandler<RemoveWorkspaceAccessHandler>();
 
         #endregion
     }

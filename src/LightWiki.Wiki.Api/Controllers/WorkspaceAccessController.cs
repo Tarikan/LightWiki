@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using LightWiki.Features.Workspaces.Handlers;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Web.Extensions;
@@ -21,9 +22,9 @@ public class WorkspaceAccessController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpPost("add-persona")]
+    [HttpPost]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GivePersonalAccess([FromBody] AddWorkspacePersonalAccess request)
+    public async Task<IActionResult> GivePersonalAccess([FromBody] AddWorkspaceAccess request)
     {
         var result = await _mediator.Send(request);
 
@@ -32,31 +33,9 @@ public class WorkspaceAccessController : ControllerBase
             fail => fail.ToActionResult());
     }
 
-    [HttpPost("add-group")]
+    [HttpDelete]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GiveGroupAccess([FromBody] AddWorkspaceGroupAccess request)
-    {
-        var result = await _mediator.Send(request);
-
-        return result.Match(
-            Ok,
-            fail => fail.ToActionResult());
-    }
-
-    [HttpPost("remove-personal")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RemovePersonalAccess([FromBody] RemoveWorkspacePersonalAccess request)
-    {
-        var result = await _mediator.Send(request);
-
-        return result.Match(
-            Ok,
-            fail => fail.ToActionResult());
-    }
-
-    [HttpPost("remove-group")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RemoveGroupAccess([FromBody] RemoveWorkspaceGroupAccess request)
+    public async Task<IActionResult> RemoveGroupAccess([FromBody] RemoveWorkspaceAccess request)
     {
         var result = await _mediator.Send(request);
 

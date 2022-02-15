@@ -23,19 +23,17 @@ public class WikiContext : DbContext
 
     public DbSet<Group> Groups { get; set; }
 
-    public DbSet<ArticlePersonalAccessRule> ArticlePersonalAccessRules { get; set; }
-
-    public DbSet<ArticleGroupAccessRule> ArticleGroupAccessRules { get; set; }
-
     public DbSet<GroupPersonalAccessRule> GroupPersonalAccessRules { get; set; }
 
     public DbSet<Workspace> Workspaces { get; set; }
 
-    public DbSet<WorkspacePersonalAccessRule> WorkspacePersonalAccessRules { get; set; }
-
-    public DbSet<WorkspaceGroupAccessRule> WorkspaceGroupAccessRules { get; set; }
-
     public DbSet<Image> Images { get; set; }
+
+    public DbSet<Party> Parties { get; set; }
+
+    public DbSet<WorkspaceAccess> WorkspaceAccesses { get; set; }
+
+    public DbSet<ArticleAccess> ArticleAccesses { get; set; }
 
     public override Task<int> SaveChangesAsync(
         bool acceptAllChangesOnSuccess,
@@ -86,5 +84,8 @@ public class WikiContext : DbContext
         modelBuilder.ApplyConfiguration(new WorkspaceGroupAccessRuleConfiguration());
         modelBuilder.ApplyConfiguration(new WorkspacePersonalAccessRuleConfiguration());
         modelBuilder.ApplyConfiguration(new ImageConfiguration());
+        modelBuilder.ApplyConfiguration(new WorkspaceAccessConfiguration());
+        modelBuilder.ApplyConfiguration(new ArticleAccessConfiguration());
+        modelBuilder.ApplyConfiguration(new PartyConfiguration());
     }
 }

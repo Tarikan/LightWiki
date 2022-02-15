@@ -8,6 +8,8 @@ public class UserContext : ICloneable
 
     public string Email { get; set; }
 
+    public int PartyId { get; set; }
+
     public object Clone()
     {
         return new UserContext

@@ -10,14 +10,15 @@ using LightWiki.Shared.Validation;
 
 namespace LightWiki.Features.Articles.Validators;
 
-public class RemoveGroupAccessValidator : AbstractValidator<RemoveGroupAccess>
+public class AddArticleAccessValidator : AbstractValidator<AddArticleAccess>
 {
-    public RemoveGroupAccessValidator(
+    public AddArticleAccessValidator(
         WikiContext wikiContext,
         IAuthorizedUserProvider authorizedUserProvider,
         IArticleHierarchyNodeRepository articleHierarchyNodeRepository)
     {
         RuleFor(r => r.ArticleId)
+            .Cascade(CascadeMode.Stop)
             .EntityShouldExist(wikiContext.Articles)
             .WithErrorCode(FailCode.BadRequest.ToString())
             .UserShouldHaveAccessToArticle(
@@ -27,7 +28,6 @@ public class RemoveGroupAccessValidator : AbstractValidator<RemoveGroupAccess>
                 ArticleAccessRule.Modify)
             .WithErrorCode(FailCode.Forbidden.ToString());
 
-        RuleFor(r => r.GroupId)
-            .EntityShouldExist(wikiContext.Groups);
+        RuleFor(r => r.PartyId).EntityShouldExist(wikiContext.Parties);
     }
 }

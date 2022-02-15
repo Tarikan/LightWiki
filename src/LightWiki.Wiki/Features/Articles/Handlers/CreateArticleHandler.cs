@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,9 +10,9 @@ using LightWiki.Domain.Enums;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Infrastructure.Auth;
-using LightWiki.Infrastructure.Extensions;
 using LightWiki.Infrastructure.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 using Slugify;
 
@@ -43,6 +44,10 @@ public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<
         CreateArticle request,
         CancellationToken cancellationToken)
     {
+        var specialGroups = await _wikiContext.Groups
+            .Where(g => g.GroupType != GroupType.Regular)
+            .ToListAsync(cancellationToken);
+
         var userContext = await _authorizedUserProvider.GetUser();
         var article = _mapper.Map<Article>(request);
         article.Slug = _slugHelper.GenerateSlug(request.Name);
@@ -63,14 +68,26 @@ public sealed class CreateArticleHandler : IRequestHandler<CreateArticle, OneOf<
         await _wikiContext.Articles.AddAsync(article, cancellationToken);
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
-        var personalAccess = new ArticlePersonalAccessRule
+        var rules = new List<ArticleAccess>
         {
-            UserId = userContext.Id,
-            ArticleId = article.Id,
-            ArticleAccessRule = ArticleAccessRule.All,
+            new ()
+            {
+                PartyId = userContext.PartyId,
+                ArticleAccessRule = ArticleAccessRule.All,
+            },
+            new ()
+            {
+                PartyId = specialGroups.Single(g => g.GroupType == GroupType.Admin).PartyId,
+                ArticleAccessRule = ArticleAccessRule.All,
+            },
+            new ()
+            {
+                PartyId = specialGroups.Single(g => g.GroupType == GroupType.Default).PartyId,
+                ArticleAccessRule = request.GlobalAccessRule,
+            },
         };
 
-        await _wikiContext.ArticlePersonalAccessRules.AddAsync(personalAccess, cancellationToken);
+        article.ArticleAccesses = rules;
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
         await _wikiContext.SaveChangesAsync(cancellationToken);

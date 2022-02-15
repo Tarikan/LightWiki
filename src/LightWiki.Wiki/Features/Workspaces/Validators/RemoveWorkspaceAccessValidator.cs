@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LightWiki.Features.Workspaces.Validators;
 
-public class RemoveGroupAccessValidator : AbstractValidator<RemoveWorkspaceGroupAccess>
+public class RemoveWorkspaceAccessValidator : AbstractValidator<RemoveWorkspaceAccess>
 {
-    public RemoveGroupAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
+    public RemoveWorkspaceAccessValidator(WikiContext wikiContext, IAuthorizedUserProvider authorizedUserProvider)
     {
-        RuleFor(r => r.GroupId)
-            .EntityShouldExist(wikiContext.Groups)
+        RuleFor(r => r.PartyId)
+            .EntityShouldExist(wikiContext.Parties)
             .WithErrorCode(FailCode.BadRequest.ToString());
 
         RuleFor(r => r.WorkspaceId)
@@ -30,9 +30,9 @@ public class RemoveGroupAccessValidator : AbstractValidator<RemoveWorkspaceGroup
         RuleFor(r => r)
             .CustomAsync(async (r, ctx, _) =>
             {
-                if (!await wikiContext.WorkspaceGroupAccessRules
-                        .AnyAsync(rule => rule.GroupId == r.GroupId ||
-                                          rule.WorkspaceId == r.WorkspaceId))
+                if (!await wikiContext.WorkspaceAccesses
+                        .AnyAsync(u => u.PartyId == r.PartyId &&
+                                       u.WorkspaceId == r.WorkspaceId))
                 {
                     ctx.AddFailure("Rule not found");
                 }

@@ -4,13 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightWiki.Data;
-using LightWiki.Data.Mongo.Models;
 using LightWiki.Domain.Enums;
-using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Features.Workspaces.Requests;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Shared.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -49,23 +48,15 @@ public class
 
         if (userContext is null)
         {
-            articlesRequest = articlesRequest.Where(a => a.GlobalAccessRule.HasFlag(ArticleAccessRule.Read) &&
-                                                         a.Workspace.WorkspaceAccessRule.HasFlag(WorkspaceAccessRule
-                                                             .Browse));
+            articlesRequest = articlesRequest
+                .IncludeDefaultAccessRules()
+                .WhereDefaultUserHasAccess(ArticleAccessRule.Read);
         }
         else
         {
             articlesRequest = articlesRequest
-                .Where(a => a.PersonalAccessRules.Any(par => par.UserId == userContext.Id &&
-                                                             par.ArticleAccessRule.HasFlag(ArticleAccessRule.Read)) ||
-                            a.PersonalAccessRules.All(par => par.UserId != userContext.Id) &&
-                            a.GroupAccessRules.Any(gar => gar.Group.Users.Any(u => u.Id == userContext.Id) &&
-                                                          gar.ArticleAccessRule.HasFlag(ArticleAccessRule.Read)) ||
-                            a.GlobalAccessRule.HasFlag(ArticleAccessRule.Read) &&
-                            a.PersonalAccessRules.All(par => par.UserId != userContext.Id) &&
-                            a.GroupAccessRules
-                                .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id))
-                                .All(gar => !gar.ArticleAccessRule.HasFlag(ArticleAccessRule.Read)));
+                .IncludeAccessRules(userContext.Id)
+                .WhereUserHasAccess(userContext.Id, ArticleAccessRule.Read);
         }
 
         var result = await articlesRequest.ToListAsync(cancellationToken);

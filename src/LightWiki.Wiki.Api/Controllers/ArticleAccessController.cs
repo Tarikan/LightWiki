@@ -21,9 +21,9 @@ public class ArticleAccessController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpPost("add-personal")]
+    [HttpPost]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AddPersonalAccess([FromBody] AddPersonalAccess request)
+    public async Task<IActionResult> AddPersonalAccess([FromBody] AddArticleAccess request)
     {
         var result = await _mediator.Send(request);
 
@@ -32,31 +32,9 @@ public class ArticleAccessController : ControllerBase
             fail => fail.ToActionResult());
     }
 
-    [HttpPost("add-group")]
+    [HttpDelete]
     [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AddGroupAccess([FromBody] AddGroupAccess request)
-    {
-        var result = await _mediator.Send(request);
-
-        return result.Match(
-            Ok,
-            fail => fail.ToActionResult());
-    }
-
-    [HttpPost("remove-personal")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RemovePersonalAccess([FromBody] RemovePersonalAccess request)
-    {
-        var result = await _mediator.Send(request);
-
-        return result.Match(
-            Ok,
-            fail => fail.ToActionResult());
-    }
-
-    [HttpPost("remove-group")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RemoveGroupAccess([FromBody] RemoveGroupAccess request)
+    public async Task<IActionResult> RemoveGroupAccess([FromBody] RemoveArticleAccess request)
     {
         var result = await _mediator.Send(request);
 

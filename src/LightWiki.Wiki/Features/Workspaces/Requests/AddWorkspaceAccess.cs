@@ -3,13 +3,13 @@ using LightWiki.Infrastructure.Models;
 using MediatR;
 using OneOf;
 
-namespace LightWiki.Features.Workspaces.Requests;
+namespace LightWiki.Features.Workspaces.Handlers;
 
-public class AddWorkspacePersonalAccess : IRequest<OneOf<Success, Fail>>
+public class AddWorkspaceAccess : IRequest<OneOf<Success, Fail>>
 {
     public int WorkspaceId { get; set; }
 
-    public int UserId { get; set; }
+    public int PartyId { get; set; }
 
     public WorkspaceAccessRule WorkspaceAccessRule { get; set; }
 }

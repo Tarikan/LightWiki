@@ -1,14 +1,16 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
+using LightWiki.Domain.Extensions;
+using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Configuration;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Shared.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -39,31 +41,24 @@ public class GetArticleContentHandler : IRequestHandler<GetArticleContent, OneOf
         CancellationToken cancellationToken)
     {
         var userContext = await _authorizedUserProvider.GetUserOrDefault();
+        Article article;
 
-        var article = await _wikiContext.Articles
-            .Include(a => a.PersonalAccessRules
-                .Where(par => userContext != null &&
-                              par.UserId == userContext.Id))
-            .Include(a => a.GroupAccessRules
-                .Where(gar => userContext != null &&
-                              gar.Group.Users.Any(u => u.Id == userContext.Id)))
-            .SingleAsync(a => a.Id == request.ArticleId, cancellationToken);
-
-        var accessLevel = article.GlobalAccessRule;
-        if (article.GroupAccessRules.Any())
+        if (userContext is null)
         {
-            accessLevel = article.GroupAccessRules.Single(gar =>
-                    (int)gar.ArticleAccessRule == article.GroupAccessRules
-                        .Max(gr => (int)gr.ArticleAccessRule))
-                .ArticleAccessRule;
+            article = await _wikiContext.Articles
+                .IncludeDefaultAccessRules()
+                .SingleAsync(a => a.Id == request.ArticleId, cancellationToken);
+        }
+        else
+        {
+            article = await _wikiContext.Articles
+                .IncludeAccessRules(userContext.Id)
+                .SingleAsync(a => a.Id == request.ArticleId, cancellationToken);
         }
 
-        if (article.PersonalAccessRules.Any())
-        {
-            accessLevel = article.PersonalAccessRules.First().ArticleAccessRule;
-        }
+        var accessLevel = article.ArticleAccesses.GetHighestPriorityRule();
 
-        if (accessLevel < ArticleAccessRule.Read)
+        if (!accessLevel.HasFlag(ArticleAccessRule.Read))
         {
             return new Fail("User does not have access to this resource", FailCode.Forbidden);
         }

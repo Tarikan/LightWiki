@@ -2,11 +2,11 @@
 
 namespace LightWiki.Features.Articles.Responses.Models;
 
-public class ArticleGroupAccessRuleModel
+public class ArticleAccessModel
 {
-    public int Id { get; set; }
+    public int ArticleId { get; set; }
 
-    public int GroupId { get; set; }
+    public int PartyId { get; set; }
 
     public ArticleAccessRule ArticleAccessRule { get; set; }
 }

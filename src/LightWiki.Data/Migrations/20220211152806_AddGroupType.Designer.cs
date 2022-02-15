@@ -3,6 +3,7 @@ using System;
 using LightWiki.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightWiki.Data.Migrations
 {
     [DbContext(typeof(WikiContext))]
-    partial class WikiContextModelSnapshot : ModelSnapshot
+    [Migration("20220211152806_AddGroupType")]
+    partial class AddGroupType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,6 +55,10 @@ namespace LightWiki.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<int>("GlobalAccessRule")
+                        .HasColumnType("integer")
+                        .HasColumnName("global_access_rule");
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
@@ -101,48 +107,6 @@ namespace LightWiki.Data.Migrations
                     b.ToTable("articles", (string)null);
                 });
 
-            modelBuilder.Entity("LightWiki.Domain.Models.ArticleAccess", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ArticleAccessRule")
-                        .HasColumnType("integer")
-                        .HasColumnName("article_access_rule");
-
-                    b.Property<int>("ArticleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("article_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("PartyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("party_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id")
-                        .HasName("pk_article_accesses");
-
-                    b.HasIndex("ArticleId")
-                        .HasDatabaseName("ix_article_accesses_article_id");
-
-                    b.HasIndex("PartyId", "ArticleId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_article_accesses_party_id_article_id");
-
-                    b.ToTable("article_accesses", (string)null);
-                });
-
             modelBuilder.Entity("LightWiki.Domain.Models.ArticleGroupAccessRule", b =>
                 {
                     b.Property<int>("Id")
@@ -165,16 +129,16 @@ namespace LightWiki.Data.Migrations
                         .HasColumnName("group_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_article_group_access_rule");
+                        .HasName("pk_article_group_access_rules");
 
                     b.HasIndex("GroupId")
-                        .HasDatabaseName("ix_article_group_access_rule_group_id");
+                        .HasDatabaseName("ix_article_group_access_rules_group_id");
 
                     b.HasIndex("ArticleId", "GroupId")
                         .IsUnique()
-                        .HasDatabaseName("ix_article_group_access_rule_article_id_group_id");
+                        .HasDatabaseName("ix_article_group_access_rules_article_id_group_id");
 
-                    b.ToTable("article_group_access_rule", (string)null);
+                    b.ToTable("article_group_access_rules", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.ArticlePersonalAccessRule", b =>
@@ -199,16 +163,16 @@ namespace LightWiki.Data.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_article_personal_access_rule");
+                        .HasName("pk_article_personal_access_rules");
 
                     b.HasIndex("ArticleId")
-                        .HasDatabaseName("ix_article_personal_access_rule_article_id");
+                        .HasDatabaseName("ix_article_personal_access_rules_article_id");
 
                     b.HasIndex("UserId", "ArticleId")
                         .IsUnique()
-                        .HasDatabaseName("ix_article_personal_access_rule_user_id_article_id");
+                        .HasDatabaseName("ix_article_personal_access_rules_user_id_article_id");
 
-                    b.ToTable("article_personal_access_rule", (string)null);
+                    b.ToTable("article_personal_access_rules", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.ArticleVersion", b =>
@@ -269,10 +233,6 @@ namespace LightWiki.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<int>("PartyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("party_id");
-
                     b.Property<string>("Slug")
                         .HasColumnType("text")
                         .HasColumnName("slug");
@@ -283,9 +243,6 @@ namespace LightWiki.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique()
                         .HasDatabaseName("ix_groups_name");
-
-                    b.HasIndex("PartyId")
-                        .HasDatabaseName("ix_groups_party_id");
 
                     b.HasIndex("Slug")
                         .IsUnique()
@@ -369,28 +326,6 @@ namespace LightWiki.Data.Migrations
                     b.ToTable("images", (string)null);
                 });
 
-            modelBuilder.Entity("LightWiki.Domain.Models.Party", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PartyType")
-                        .HasColumnType("integer")
-                        .HasColumnName("party_type");
-
-                    b.HasKey("Id")
-                        .HasName("pk_parties");
-
-                    b.HasIndex("Id", "PartyType")
-                        .HasDatabaseName("ix_parties_id_party_type");
-
-                    b.ToTable("parties", (string)null);
-                });
-
             modelBuilder.Entity("LightWiki.Domain.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -412,10 +347,6 @@ namespace LightWiki.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<int>("PartyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("party_id");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -430,9 +361,6 @@ namespace LightWiki.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique()
                         .HasDatabaseName("ix_users_name");
-
-                    b.HasIndex("PartyId")
-                        .HasDatabaseName("ix_users_party_id");
 
                     b.ToTable("users", (string)null);
                 });
@@ -466,6 +394,10 @@ namespace LightWiki.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<int>("WorkspaceAccessRule")
+                        .HasColumnType("integer")
+                        .HasColumnName("workspace_access_rule");
+
                     b.HasKey("Id")
                         .HasName("pk_workspaces");
 
@@ -482,48 +414,6 @@ namespace LightWiki.Data.Migrations
                         .HasDatabaseName("ix_workspaces_slug");
 
                     b.ToTable("workspaces", (string)null);
-                });
-
-            modelBuilder.Entity("LightWiki.Domain.Models.WorkspaceAccess", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("PartyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("party_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int>("WorkspaceAccessRule")
-                        .HasColumnType("integer")
-                        .HasColumnName("workspace_access_rule");
-
-                    b.Property<int>("WorkspaceId")
-                        .HasColumnType("integer")
-                        .HasColumnName("workspace_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_workspace_accesses");
-
-                    b.HasIndex("WorkspaceId")
-                        .HasDatabaseName("ix_workspace_accesses_workspace_id");
-
-                    b.HasIndex("PartyId", "WorkspaceId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_workspace_accesses_party_id_workspace_id");
-
-                    b.ToTable("workspace_accesses", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.WorkspaceGroupAccessRule", b =>
@@ -548,16 +438,16 @@ namespace LightWiki.Data.Migrations
                         .HasColumnName("workspace_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_workspace_group_access_rule");
+                        .HasName("pk_workspace_group_access_rules");
 
                     b.HasIndex("WorkspaceId")
-                        .HasDatabaseName("ix_workspace_group_access_rule_workspace_id");
+                        .HasDatabaseName("ix_workspace_group_access_rules_workspace_id");
 
                     b.HasIndex("GroupId", "WorkspaceId")
                         .IsUnique()
-                        .HasDatabaseName("ix_workspace_group_access_rule_group_id_workspace_id");
+                        .HasDatabaseName("ix_workspace_group_access_rules_group_id_workspace_id");
 
-                    b.ToTable("workspace_group_access_rule", (string)null);
+                    b.ToTable("workspace_group_access_rules", (string)null);
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.WorkspacePersonalAccessRule", b =>
@@ -582,16 +472,16 @@ namespace LightWiki.Data.Migrations
                         .HasColumnName("workspace_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_workspace_personal_access_rule");
+                        .HasName("pk_workspace_personal_access_rules");
 
                     b.HasIndex("WorkspaceId")
-                        .HasDatabaseName("ix_workspace_personal_access_rule_workspace_id");
+                        .HasDatabaseName("ix_workspace_personal_access_rules_workspace_id");
 
                     b.HasIndex("UserId", "WorkspaceId")
                         .IsUnique()
-                        .HasDatabaseName("ix_workspace_personal_access_rule_user_id_workspace_id");
+                        .HasDatabaseName("ix_workspace_personal_access_rules_user_id_workspace_id");
 
-                    b.ToTable("workspace_personal_access_rule", (string)null);
+                    b.ToTable("workspace_personal_access_rules", (string)null);
                 });
 
             modelBuilder.Entity("GroupUser", b =>
@@ -639,42 +529,21 @@ namespace LightWiki.Data.Migrations
                     b.Navigation("Workspace");
                 });
 
-            modelBuilder.Entity("LightWiki.Domain.Models.ArticleAccess", b =>
-                {
-                    b.HasOne("LightWiki.Domain.Models.Article", "Article")
-                        .WithMany("ArticleAccesses")
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_article_accesses_articles_article_id");
-
-                    b.HasOne("LightWiki.Domain.Models.Party", "Party")
-                        .WithMany("ArticleAccesses")
-                        .HasForeignKey("PartyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_article_accesses_parties_party_id");
-
-                    b.Navigation("Article");
-
-                    b.Navigation("Party");
-                });
-
             modelBuilder.Entity("LightWiki.Domain.Models.ArticleGroupAccessRule", b =>
                 {
                     b.HasOne("LightWiki.Domain.Models.Article", "Article")
-                        .WithMany()
+                        .WithMany("GroupAccessRules")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_article_group_access_rule_articles_article_id");
+                        .HasConstraintName("fk_article_group_access_rules_articles_article_id");
 
                     b.HasOne("LightWiki.Domain.Models.Group", "Group")
                         .WithMany("ArticleGroupAccessRules")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_article_group_access_rule_groups_group_id");
+                        .HasConstraintName("fk_article_group_access_rules_groups_group_id");
 
                     b.Navigation("Article");
 
@@ -684,18 +553,18 @@ namespace LightWiki.Data.Migrations
             modelBuilder.Entity("LightWiki.Domain.Models.ArticlePersonalAccessRule", b =>
                 {
                     b.HasOne("LightWiki.Domain.Models.Article", "Article")
-                        .WithMany()
+                        .WithMany("PersonalAccessRules")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_article_personal_access_rule_articles_article_id");
+                        .HasConstraintName("fk_article_personal_access_rules_articles_article_id");
 
                     b.HasOne("LightWiki.Domain.Models.User", "User")
-                        .WithMany()
+                        .WithMany("ArticlePersonalAccessRules")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_article_personal_access_rule_users_user_id");
+                        .HasConstraintName("fk_article_personal_access_rules_users_user_id");
 
                     b.Navigation("Article");
 
@@ -723,18 +592,6 @@ namespace LightWiki.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LightWiki.Domain.Models.Group", b =>
-                {
-                    b.HasOne("LightWiki.Domain.Models.Party", "Party")
-                        .WithMany("Groups")
-                        .HasForeignKey("PartyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_groups_parties_party_id");
-
-                    b.Navigation("Party");
-                });
-
             modelBuilder.Entity("LightWiki.Domain.Models.GroupPersonalAccessRule", b =>
                 {
                     b.HasOne("LightWiki.Domain.Models.Group", "Group")
@@ -756,18 +613,6 @@ namespace LightWiki.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LightWiki.Domain.Models.User", b =>
-                {
-                    b.HasOne("LightWiki.Domain.Models.Party", "Party")
-                        .WithMany("Users")
-                        .HasForeignKey("PartyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_users_parties_party_id");
-
-                    b.Navigation("Party");
-                });
-
             modelBuilder.Entity("LightWiki.Domain.Models.Workspace", b =>
                 {
                     b.HasOne("LightWiki.Domain.Models.Article", "RootArticle")
@@ -778,27 +623,6 @@ namespace LightWiki.Data.Migrations
                     b.Navigation("RootArticle");
                 });
 
-            modelBuilder.Entity("LightWiki.Domain.Models.WorkspaceAccess", b =>
-                {
-                    b.HasOne("LightWiki.Domain.Models.Party", "Party")
-                        .WithMany("WorkspaceAccesses")
-                        .HasForeignKey("PartyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_workspace_accesses_parties_party_id");
-
-                    b.HasOne("LightWiki.Domain.Models.Workspace", "Workspace")
-                        .WithMany("WorkspaceAccesses")
-                        .HasForeignKey("WorkspaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_workspace_accesses_workspaces_workspace_id");
-
-                    b.Navigation("Party");
-
-                    b.Navigation("Workspace");
-                });
-
             modelBuilder.Entity("LightWiki.Domain.Models.WorkspaceGroupAccessRule", b =>
                 {
                     b.HasOne("LightWiki.Domain.Models.Group", "Group")
@@ -806,14 +630,14 @@ namespace LightWiki.Data.Migrations
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_workspace_group_access_rule_groups_group_id");
+                        .HasConstraintName("fk_workspace_group_access_rules_groups_group_id");
 
                     b.HasOne("LightWiki.Domain.Models.Workspace", "Workspace")
-                        .WithMany()
+                        .WithMany("GroupAccessRules")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_workspace_group_access_rule_workspaces_workspace_id");
+                        .HasConstraintName("fk_workspace_group_access_rules_workspaces_workspace_id");
 
                     b.Navigation("Group");
 
@@ -823,18 +647,18 @@ namespace LightWiki.Data.Migrations
             modelBuilder.Entity("LightWiki.Domain.Models.WorkspacePersonalAccessRule", b =>
                 {
                     b.HasOne("LightWiki.Domain.Models.User", "User")
-                        .WithMany()
+                        .WithMany("WorkspacePersonalAccessRules")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_workspace_personal_access_rule_users_user_id");
+                        .HasConstraintName("fk_workspace_personal_access_rules_users_user_id");
 
                     b.HasOne("LightWiki.Domain.Models.Workspace", "Workspace")
-                        .WithMany()
+                        .WithMany("PersonalAccessRules")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_workspace_personal_access_rule_workspaces_workspace_id");
+                        .HasConstraintName("fk_workspace_personal_access_rules_workspaces_workspace_id");
 
                     b.Navigation("User");
 
@@ -843,9 +667,11 @@ namespace LightWiki.Data.Migrations
 
             modelBuilder.Entity("LightWiki.Domain.Models.Article", b =>
                 {
-                    b.Navigation("ArticleAccesses");
-
                     b.Navigation("ChildArticles");
+
+                    b.Navigation("GroupAccessRules");
+
+                    b.Navigation("PersonalAccessRules");
 
                     b.Navigation("RootedWorkspace");
 
@@ -861,27 +687,22 @@ namespace LightWiki.Data.Migrations
                     b.Navigation("WorkspaceGroupAccessRules");
                 });
 
-            modelBuilder.Entity("LightWiki.Domain.Models.Party", b =>
-                {
-                    b.Navigation("ArticleAccesses");
-
-                    b.Navigation("Groups");
-
-                    b.Navigation("Users");
-
-                    b.Navigation("WorkspaceAccesses");
-                });
-
             modelBuilder.Entity("LightWiki.Domain.Models.User", b =>
                 {
+                    b.Navigation("ArticlePersonalAccessRules");
+
                     b.Navigation("GroupPersonalAccessRules");
+
+                    b.Navigation("WorkspacePersonalAccessRules");
                 });
 
             modelBuilder.Entity("LightWiki.Domain.Models.Workspace", b =>
                 {
                     b.Navigation("Articles");
 
-                    b.Navigation("WorkspaceAccesses");
+                    b.Navigation("GroupAccessRules");
+
+                    b.Navigation("PersonalAccessRules");
                 });
 #pragma warning restore 612, 618
         }

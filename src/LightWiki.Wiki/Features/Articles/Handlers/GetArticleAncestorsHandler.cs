@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Enums;
+using LightWiki.Domain.Extensions;
 using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
-using LightWiki.Shared.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -47,19 +47,16 @@ public class GetArticleAncestorsHandler : IRequestHandler<GetArticleAncestors, O
             articles = await _wikiContext.Articles
                 .Where(a => idsToSelect.Contains(a.Id))
                 .ToListAsync(cancellationToken);
-            rule = articles.Select(a => a.GlobalAccessRule)
+            rule = articles.Select(a => a.ArticleAccesses.GetHighestPriorityRule())
                 .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
         }
         else
         {
             articles = await _wikiContext.Articles
-                .Include(a => a.GroupAccessRules
-                    .Where(gar => gar.Group.Users.Any(u => u.Id == userContext.Id)))
-                .Include(a => a.PersonalAccessRules
-                    .Where(par => par.UserId == userContext.Id))
+                .Include(a => a.ArticleAccesses.WhereUserIsRelated(userContext.Id))
                 .Where(a => idsToSelect.Contains(a.Id))
                 .ToListAsync(cancellationToken);
-            rule = articles.Select(a => a.GetHighestPriorityRule())
+            rule = articles.Select(a => a.ArticleAccesses.GetHighestPriorityRule())
                 .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
         }
 
