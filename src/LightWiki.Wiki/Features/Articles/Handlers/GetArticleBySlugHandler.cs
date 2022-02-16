@@ -46,6 +46,7 @@ public class GetArticleBySlugHandler : IRequestHandler<GetArticleBySlug, OneOf<A
                 .OrderByDescending(v => v.CreatedAt).Take(1))
             .ThenInclude(av => av.User)
             .Include(a => a.User)
+            .Include(a => a.ArticleAccesses)
             .AsNoTracking()
             .SingleAsync(
             a => a.Slug == request.ArticleNameSlug && a.Workspace.Slug == request.WorkspaceNameSlug,

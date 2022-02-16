@@ -28,7 +28,7 @@ public sealed class UpdateArticleHandler : IRequestHandler<UpdateArticle, OneOf<
         var article = await _wikiContext.Articles.FindAsync(request.Id);
 
         article = _mapper.Map(request, article);
-        article.Slug = _slugHelper.GenerateSlug(request.Name);
+        article.Slug = request.Slug;
 
         await _wikiContext.SaveChangesAsync(cancellationToken);
 

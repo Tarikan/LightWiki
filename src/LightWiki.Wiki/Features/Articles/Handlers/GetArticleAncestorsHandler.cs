@@ -11,6 +11,7 @@ using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Shared.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -45,6 +46,7 @@ public class GetArticleAncestorsHandler : IRequestHandler<GetArticleAncestors, O
         if (userContext is null)
         {
             articles = await _wikiContext.Articles
+                .IncludeDefaultAccessRules()
                 .Where(a => idsToSelect.Contains(a.Id))
                 .ToListAsync(cancellationToken);
             rule = articles.Select(a => a.ArticleAccesses.GetHighestPriorityRule())
@@ -53,14 +55,12 @@ public class GetArticleAncestorsHandler : IRequestHandler<GetArticleAncestors, O
         else
         {
             articles = await _wikiContext.Articles
-                .Include(a => a.ArticleAccesses.WhereUserIsRelated(userContext.Id))
+                .IncludeAccessRules(userContext.Id)
                 .Where(a => idsToSelect.Contains(a.Id))
                 .ToListAsync(cancellationToken);
             rule = articles.Select(a => a.ArticleAccesses.GetHighestPriorityRule())
                 .Aggregate(ArticleAccessRule.All, (acc, a) => a & acc);
         }
-
-        var test = await _articleHierarchyNodeRepository.GetTree(request.ArticleId);
 
         if (!rule.HasFlag(ArticleAccessRule.Read))
         {
