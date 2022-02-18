@@ -27,4 +27,6 @@ public class ArticleModel
     public DateTime CreatedAt { get; set; }
 
     public List<ArticleAccessModel> ArticleAccesses { get; set; }
+
+    public ArticleAccessRule ArticleAccessRuleForCaller { get; set; }
 }

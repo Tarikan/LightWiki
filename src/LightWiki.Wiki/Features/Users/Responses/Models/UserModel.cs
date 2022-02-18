@@ -9,4 +9,6 @@ public class UserModel
     public string Name { get; set; }
 
     public ImageModel Avatar { get; set; }
+
+    public UserInfoModel Info { get; set; }
 }

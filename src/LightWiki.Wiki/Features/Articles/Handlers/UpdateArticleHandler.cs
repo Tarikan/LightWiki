@@ -10,28 +10,26 @@ using Slugify;
 
 namespace LightWiki.Features.Articles.Handlers;
 
-public sealed class UpdateArticleHandler : IRequestHandler<UpdateArticle, OneOf<Success, Fail>>
+public sealed class UpdateArticleHandler : IRequestHandler<UpdateArticle, OneOf<SuccessWithId<string>, Fail>>
 {
-    private readonly IMapper _mapper;
     private readonly WikiContext _wikiContext;
     private readonly ISlugHelper _slugHelper;
 
-    public UpdateArticleHandler(IMapper mapper, WikiContext wikiContext, ISlugHelper slugHelper)
+    public UpdateArticleHandler(WikiContext wikiContext, ISlugHelper slugHelper)
     {
-        _mapper = mapper;
         _wikiContext = wikiContext;
         _slugHelper = slugHelper;
     }
 
-    public async Task<OneOf<Success, Fail>> Handle(UpdateArticle request, CancellationToken cancellationToken)
+    public async Task<OneOf<SuccessWithId<string>, Fail>> Handle(UpdateArticle request, CancellationToken cancellationToken)
     {
         var article = await _wikiContext.Articles.FindAsync(request.Id);
 
-        article = _mapper.Map(request, article);
-        article.Slug = request.Slug;
+        article.Name = request.Name;
+        article.Slug = _slugHelper.GenerateSlug(request.Name);
 
         await _wikiContext.SaveChangesAsync(cancellationToken);
 
-        return new Success();
+        return new SuccessWithId<string>(article.Slug);
     }
 }

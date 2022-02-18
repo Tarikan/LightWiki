@@ -23,5 +23,7 @@ namespace LightWiki.Domain.Models
         public DateTime UpdatedAt { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public UserInfo UserInfo { get; set; }
     }
 }

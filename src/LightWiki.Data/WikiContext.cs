@@ -35,6 +35,8 @@ public class WikiContext : DbContext
 
     public DbSet<ArticleAccess> ArticleAccesses { get; set; }
 
+    public DbSet<UserInfo> UserInfos { get; set; }
+
     public override Task<int> SaveChangesAsync(
         bool acceptAllChangesOnSuccess,
         CancellationToken cancellationToken = default)

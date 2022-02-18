@@ -222,7 +222,7 @@ public class Startup
         services.ForScoped<GetArticles, CollectionResult<ArticleModel>>()
             .AddHandler<GetArticlesHandler>();
 
-        services.ForScoped<UpdateArticle, Success>()
+        services.ForScoped<UpdateArticle, SuccessWithId<string>>()
             .WithValidation<UpdateArticleValidator>()
             .AddHandler<UpdateArticleHandler>();
 
@@ -309,6 +309,10 @@ public class Startup
         services.ForScoped<UploadUserImage, ResponsiveImageModel>()
             .WithValidation<UploadUserImageValidator>()
             .AddHandler<UploadUserImageHandler>();
+
+        services.ForScoped<UpdateUserInfo, Success>()
+            .WithValidation<UpdateUserInfoValidator>()
+            .AddHandler<UpdateUserInfoHandler>();
 
         #endregion
 

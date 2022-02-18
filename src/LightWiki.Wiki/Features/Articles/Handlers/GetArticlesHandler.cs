@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -61,8 +62,15 @@ public class GetArticlesHandler : IRequestHandler<GetArticles, OneOf<CollectionR
 
         var total = await query.CountAsync(cancellationToken);
 
-        var result = await _sieveProcessor.Apply(request, query).ToCollectionResult(total, cancellationToken);
+        var result = await _sieveProcessor.Apply(request, query).ToListAsync(cancellationToken);
+        var models = new List<ArticleModel>(result.Count);
+        foreach (var article in result)
+        {
+            var model = _mapper.Map<ArticleModel>(article);
+            model.ArticleAccessRuleForCaller = article.ArticleAccesses.GetHighestPriorityRule();
+            models.Add(model);
+        }
 
-        return _mapper.Map<CollectionResult<ArticleModel>>(result);
+        return new CollectionResult<ArticleModel>(models, total);
     }
 }

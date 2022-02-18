@@ -12,6 +12,7 @@ public class ArticleProfile : Profile
     public ArticleProfile()
     {
         CreateMap<Article, ArticleModel>()
+            .ForMember(dest => dest.ArticleAccessRuleForCaller, opts => opts.Ignore())
             .ForMember(
                 dest => dest.LastArticleVersion,
                 opts => opts.MapFrom(src =>

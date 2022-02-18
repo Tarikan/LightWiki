@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
+using LightWiki.Domain.Extensions;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Auth;
@@ -47,6 +48,7 @@ public sealed class GetArticleHandler : IRequestHandler<GetArticle, OneOf<Articl
             .SingleAsync(a => a.Id == request.ArticleId, cancellationToken);
 
         var model = _mapper.Map<ArticleModel>(article);
+        model.ArticleAccessRuleForCaller = article.ArticleAccesses.GetHighestPriorityRule();
 
         return model;
     }

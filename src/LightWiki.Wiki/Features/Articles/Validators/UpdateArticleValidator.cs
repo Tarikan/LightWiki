@@ -52,11 +52,5 @@ public class UpdateArticleValidator : AbstractValidator<UpdateArticle>
                     ctx.AddFailure("Name", "Article with such name already exists");
                 }
             });
-
-        RuleFor(r => r.Slug)
-            .MustAsync(async (slug, _) =>
-            {
-                return await wikiContext.Articles.AllAsync(a => a.Slug != slug);
-            });
     }
 }

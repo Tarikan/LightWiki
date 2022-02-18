@@ -82,6 +82,7 @@ public class GetArticleBySlugHandler : IRequestHandler<GetArticleBySlug, OneOf<A
         }
 
         var model = _mapper.Map<ArticleModel>(article);
+        model.ArticleAccessRuleForCaller = rule;
 
         return model;
     }

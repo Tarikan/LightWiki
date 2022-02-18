@@ -30,7 +30,9 @@ public class GetUserHandler : IRequestHandler<GetUser, OneOf<UserModel, Fail>>
 
     public async Task<OneOf<UserModel, Fail>> Handle(GetUser request, CancellationToken cancellationToken)
     {
-        var user = await _wikiContext.Users.FindAsync(request.UserId);
+        var user = await _wikiContext.Users
+            .Include(u => u.UserInfo)
+            .SingleAsync(u => u.Id == request.UserId, cancellationToken);
 
         var userModel = _mapper.Map<UserModel>(user);
 

@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using LightWiki.Features.Users.Requests;
 using LightWiki.Features.Users.Responses.Models;
+using LightWiki.Infrastructure.Models;
 using LightWiki.Infrastructure.Web.Authentication;
 using LightWiki.Infrastructure.Web.Extensions;
 using LightWiki.Shared.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,6 +58,18 @@ public class UsersController : ControllerBase
 
         return result.Match(
             Ok,
+            fail => fail.ToActionResult());
+    }
+
+    [Authorize]
+    [HttpPut("info")]
+    [ProducesResponseType(typeof(Success), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfo request)
+    {
+        var result = await _mediator.Send(request);
+
+        return result.Match(
+            Accepted,
             fail => fail.ToActionResult());
     }
 }
