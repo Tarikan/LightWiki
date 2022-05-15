@@ -1,0 +1,36 @@
+﻿services:
+  web:
+    build:
+      dockerfile: src/LightWiki.Wiki.Api/Dockerfile
+    environment:
+      Env: Development
+    ports:
+      - "5001:80"
+    volumes:
+      - .:/code
+      - logvolume01:/var/log
+    links:
+      - postgres
+      - mongo
+    depends_on:
+      - mongo
+      - postgres
+    network_mode: host
+
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 1111
+    network_mode: host
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    restart: always
+    network_mode: host
+volumes:
+  logvolume01: {}
