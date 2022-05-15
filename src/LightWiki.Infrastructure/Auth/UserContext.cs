@@ -16,6 +16,7 @@ public class UserContext : ICloneable
         {
             Id = Id,
             Email = Email,
+            PartyId = PartyId,
         };
     }
 }
