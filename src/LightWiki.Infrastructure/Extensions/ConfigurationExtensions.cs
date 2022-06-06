@@ -16,7 +16,7 @@ public static class ConfigurationExtensions
 
         configBuilder
             .AddJsonFile(settingsPath, optional: false, reloadOnChange: true)
-            .AddJsonFile(envSettingPath, optional: true, reloadOnChange: true);
+            .AddJsonFile(envSettingPath, optional: false, reloadOnChange: true);
 
         return configBuilder;
     }

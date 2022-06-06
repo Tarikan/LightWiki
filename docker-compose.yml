@@ -1,11 +1,12 @@
 ﻿services:
   web:
     build:
+      context: .
       dockerfile: src/LightWiki.Wiki.Api/Dockerfile
     environment:
-      Env: Development
+      ASPNETCORE_ENVIRONMENT: "DockerCompose"
     ports:
-      - "5001:80"
+      - "5000:80"
     volumes:
       - .:/code
       - logvolume01:/var/log
@@ -15,7 +16,7 @@
     depends_on:
       - mongo
       - postgres
-    network_mode: host
+
 
   postgres:
     image: postgres
@@ -24,13 +25,11 @@
     restart: always
     environment:
       POSTGRES_PASSWORD: 1111
-    network_mode: host
 
   mongo:
     image: mongo
     ports:
       - "27017:27017"
     restart: always
-    network_mode: host
 volumes:
   logvolume01: {}
