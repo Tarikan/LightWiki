@@ -1,8 +1,7 @@
-﻿services:
+﻿version: "3.3"
+services:
   web:
-    build:
-      context: .
-      dockerfile: src/LightWiki.Wiki.Api/Dockerfile
+    image: tar1kan/wiki-api
     environment:
       ASPNETCORE_ENVIRONMENT: "DockerComposeDevelopment"
     ports:
@@ -11,11 +10,9 @@
       - .:/code
       - logvolume01:/var/log
     links:
-      - postgres
       - mongo
     depends_on:
       - mongo
-      - postgres
 
   mongo:
     image: mongo

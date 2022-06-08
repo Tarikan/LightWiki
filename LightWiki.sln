@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightWiki.Data.Mongo", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightWiki.Wiki.Api", "src\LightWiki.Wiki.Api\LightWiki.Wiki.Api.csproj", "{90F95BEB-10CA-4774-A031-9C4680056F32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightWiki.Aws.Cognito.Triggers.PostConfirmation", "src\LightWiki.Aws.Cognito.Triggers.PostConfirmation\LightWiki.Aws.Cognito.Triggers.PostConfirmation.csproj", "{27BF9BDA-947B-4AFC-A7D8-60A4BAFA7EB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{90F95BEB-10CA-4774-A031-9C4680056F32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90F95BEB-10CA-4774-A031-9C4680056F32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90F95BEB-10CA-4774-A031-9C4680056F32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27BF9BDA-947B-4AFC-A7D8-60A4BAFA7EB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27BF9BDA-947B-4AFC-A7D8-60A4BAFA7EB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27BF9BDA-947B-4AFC-A7D8-60A4BAFA7EB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27BF9BDA-947B-4AFC-A7D8-60A4BAFA7EB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -35,6 +35,7 @@ public class GetWorkspaceInfoHandler : IRequestHandler<GetWorkspaceInfo, OneOf<W
         {
             Id = workspace.Id,
             WorkspaceAccess = _mapper.Map<List<WorkspaceAccessModel>>(workspace.WorkspaceAccesses),
+            Slug = workspace.Slug,
         };
     }
 }

@@ -169,7 +169,9 @@ public class Startup
 
         context.Database.Migrate();
 
-        if (env.IsDevelopment() || env.EnvironmentName == "DockerCompose")
+        if (env.IsDevelopment()
+            || env.EnvironmentName == "DockerCompose"
+            || env.EnvironmentName == "DockerComposeDevelopment")
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
