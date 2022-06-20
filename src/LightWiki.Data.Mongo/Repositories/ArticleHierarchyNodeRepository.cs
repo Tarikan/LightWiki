@@ -17,11 +17,13 @@ public class ArticleHierarchyNodeRepository : BaseRepository<ArticleHierarchyNod
 
     public async Task<List<int>> GetAncestors(int articleId)
     {
-        return await Collection
+        var result = await Collection
             .Find(a => a.ArticleId == articleId)
             .Project(new ProjectionDefinitionBuilder<ArticleHierarchyNode>()
                 .Expression(a => a.AncestorIds))
-            .SingleAsync();
+            .SingleOrDefaultAsync();
+
+        return result ?? new List<int>(0);
     }
 
     public async Task<List<ArticleHierarchyNode>> GetAncestorModels(int articleId)

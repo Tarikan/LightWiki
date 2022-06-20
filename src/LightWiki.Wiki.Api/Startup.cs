@@ -263,6 +263,10 @@ public class Startup
             .WithValidation<RemoveArticleAccessValidator>()
             .AddHandler<RemoveArticleAccessHandler>();
 
+        services.ForScoped<GetArticleAccessRules, CollectionResult<ArticleAccessRuleModel>>()
+            .WithValidation<GetArticleAccessRulesValidator>()
+            .AddHandler<GetArticleAccessRulesHandler>();
+
         #endregion
 
         #region Groups

@@ -5,10 +5,12 @@ using AutoMapper;
 using LightWiki.Data;
 using LightWiki.Data.Mongo.Repositories;
 using LightWiki.Domain.Extensions;
+using LightWiki.Domain.Models;
 using LightWiki.Features.Articles.Requests;
 using LightWiki.Features.Articles.Responses.Models;
 using LightWiki.Infrastructure.Auth;
 using LightWiki.Infrastructure.Models;
+using LightWiki.Shared.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -39,7 +41,19 @@ public sealed class GetArticleHandler : IRequestHandler<GetArticle, OneOf<Articl
         CancellationToken cancellationToken)
     {
         var userContext = await _authorizedUserProvider.GetUserOrDefault();
-        var article = await _wikiContext.Articles
+
+        IQueryable<Article> articleRequest = _wikiContext.Articles;
+
+        if (userContext is null)
+        {
+            articleRequest = articleRequest.IncludeDefaultAccessRules();
+        }
+        else
+        {
+            articleRequest = articleRequest.IncludeAccessRules(userContext.Id);
+        }
+
+        var article = await articleRequest
             .Include(a => a.Versions
                 .OrderByDescending(v => v.CreatedAt).Take(1))
             .ThenInclude(av => av.User)
